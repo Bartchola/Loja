@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja de Frango Frito</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="assets/css/global.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-shell">
+      <a class="brand" href="#inicio" aria-label="Ir para o início">
+        <div class="brand-mark" data-brand-mark>FF</div>
+        <div class="brand-copy">
+          <strong data-brand-name>Frito & Crocante</strong>
+          <span data-brand-tagline>Base para lanchonetes e restaurantes</span>
+        </div>
+      </a>
+
+      <nav class="site-nav" id="site-nav" data-site-nav>
+        <a href="#inicio">Início</a>
+        <a href="#cardapio">Cardápio</a>
+        <a href="#sobre">Sobre Nós</a>
+        <a href="#contato">Contato</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="cart-button cart-button-desktop" type="button" aria-label="Abrir carrinho">
+          <i class="ti ti-shopping-bag cart-icon" aria-hidden="true"></i>
+          <span class="cart-count" data-cart-count>0</span>
+        </button>
+
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Abrir menu"
+          data-menu-toggle
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="container hero-content">
+        <p class="eyebrow">Modelo inicial</p>
+        <h1>Header pronto para virar base de qualquer restaurante.</h1>
+        <p>
+          Estrutura responsiva, simples de adaptar e com navegação organizada para delivery,
+          hamburgueria, pizzaria, cafeteria ou frango frito.
+        </p>
+      </div>
+    </section>
+
+    <section class="menu-section" id="cardapio">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Cardápio</p>
+          <h2>Nossos destaques</h2>
+          <p>
+            Uma base pronta para montar cardápios de frango frito, hamburgueria,
+            pizzaria, cafeteria e outros restaurantes.
+          </p>
+        </div>
+
+        <div class="category-filters" data-category-filters></div>
+
+        <div class="menu-grid" data-menu-grid></div>
+      </div>
+    </section>
+
+    <section class="placeholder-section" id="sobre">
+      <div class="container">
+        <h2>Sobre Nós</h2>
+      </div>
+    </section>
+
+    <section class="placeholder-section" id="contato">
+      <div class="container">
+        <h2>Contato</h2>
+      </div>
+    </section>
+  </main>
+
+  <!-- cart-button -->
+  <button class="cart-button cart-button-mobile" ...>
+  <i class="ti ti-shopping-bag cart-icon"></i>
+  <span class="cart-count" ...>0</span>
+</button>
+
+<div class="cart-drawer-overlay" data-cart-overlay></div>
+
+<aside class="cart-drawer" aria-hidden="true" data-cart-drawer>
+  <div class="cart-drawer-header">
+    <div>
+      <p class="cart-drawer-eyebrow">Seu pedido</p>
+      <h2>Carrinho</h2>
+    </div>
+
+    <button class="cart-drawer-close" type="button" aria-label="Fechar carrinho" data-cart-close>
+      <i class="ti ti-x" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div class="cart-drawer-body" data-cart-items>
+    <div class="cart-empty-state">
+      <i class="ti ti-shopping-bag" aria-hidden="true"></i>
+      <strong>Seu carrinho está vazio</strong>
+      <p>Adicione itens do cardápio para montar seu pedido.</p>
+    </div>
+  </div>
+
+  <div class="cart-drawer-footer">
+    <div class="cart-summary-row">
+      <span>Subtotal</span>
+      <strong data-cart-subtotal>R$ 0,00</strong>
+    </div>
+
+    <div class="cart-footer-actions">
+      <button class="cart-secondary-btn" type="button" data-cart-clear>
+        Limpar
+      </button>
+
+      <button class="cart-primary-btn" type="button" data-cart-finish>
+        Finalizar pedido
+      </button>
+    </div>
+  </div>
+</aside>
+
+<div class="checkout-overlay" data-checkout-overlay></div>
+
+<section class="checkout-modal" aria-hidden="true" data-checkout-modal>
+  <div class="checkout-modal-header">
+    <div>
+      <p class="checkout-eyebrow">Finalização</p>
+      <h2>Confirmar pedido</h2>
+    </div>
+
+    <button class="checkout-close" type="button" aria-label="Fechar checkout" data-checkout-close>
+      <i class="ti ti-x" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div class="checkout-modal-body">
+    <form class="checkout-form" data-checkout-form>
+      <div class="checkout-grid">
+        <div class="checkout-field">
+          <label for="customerName">Nome</label>
+          <input id="customerName" name="customerName" type="text" placeholder="Seu nome" required>
+        </div>
+
+        <div class="checkout-field">
+          <label for="customerPhone">WhatsApp</label>
+          <input id="customerPhone" name="customerPhone" type="tel" placeholder="(51) 99999-9999" required>
+        </div>
+      </div>
+
+      <div class="checkout-field">
+        <label for="customerStreet">Endereço</label>
+        <input id="customerStreet" name="customerStreet" type="text" placeholder="Rua / Avenida" required>
+      </div>
+
+      <div class="checkout-grid checkout-grid-address">
+        <div class="checkout-field">
+          <label for="customerNumber">Número</label>
+          <input id="customerNumber" name="customerNumber" type="text" placeholder="123" required>
+        </div>
+
+        <div class="checkout-field">
+          <label for="customerDistrict">Bairro</label>
+          <input id="customerDistrict" name="customerDistrict" type="text" placeholder="Seu bairro" required>
+        </div>
+      </div>
+
+      <div class="checkout-grid">
+        <div class="checkout-field">
+          <label for="customerComplement">Complemento</label>
+          <input id="customerComplement" name="customerComplement" type="text" placeholder="Apto, bloco, sala...">
+        </div>
+
+        <div class="checkout-field">
+          <label for="customerReference">Referência</label>
+          <input id="customerReference" name="customerReference" type="text" placeholder="Casa azul, esquina...">
+        </div>
+      </div>
+
+      <div class="checkout-field">
+        <label for="paymentMethod">Forma de pagamento</label>
+        <select id="paymentMethod" name="paymentMethod" required>
+          <option value="">Selecione</option>
+          <option value="Pix">Pix</option>
+          <option value="Dinheiro">Dinheiro</option>
+          <option value="Cartão na entrega">Cartão na entrega</option>
+        </select>
+      </div>
+
+      <div class="checkout-field is-hidden" data-change-field>
+        <label for="changeFor">Troco para quanto?</label>
+        <input id="changeFor" name="changeFor" type="text" placeholder="Ex: 100,00">
+      </div>
+
+      <div class="checkout-field">
+        <label for="customerNotes">Observações</label>
+        <textarea id="customerNotes" name="customerNotes" rows="4" placeholder="Sem cebola, ponto de referência, instruções extras..."></textarea>
+      </div>
+
+      <div class="checkout-summary">
+        <div class="checkout-summary-header">
+          <strong>Resumo do pedido</strong>
+        </div>
+
+        <div class="checkout-summary-items" data-checkout-summary-items>
+          <p class="checkout-summary-empty">Seu pedido aparecerá aqui.</p>
+        </div>
+
+        <div class="checkout-summary-total">
+          <span>Total</span>
+          <strong data-checkout-total>R$ 0,00</strong>
+        </div>
+      </div>
+
+      <div class="checkout-actions">
+        <button class="checkout-secondary-btn" type="button" data-checkout-back>
+          Voltar ao carrinho
+        </button>
+
+        <button class="checkout-primary-btn" type="submit">
+          Confirmar pedido
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+  <script src="assets/config/config.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

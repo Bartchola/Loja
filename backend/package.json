@@ -1,0 +1,19 @@
+{
+  "name": "frito-crocante-backend",
+  "version": "1.0.0",
+  "description": "Backend do checkout do restaurante",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
