@@ -41,7 +41,6 @@ export async function sendWhatsAppMessage(to, message) {
     console.error("code:", error.code);
     console.error("status:", error.status);
     console.error("moreInfo:", error.moreInfo);
-    console.error("details:", error);
 
     return {
       success: false,

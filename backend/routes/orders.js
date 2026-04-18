@@ -78,34 +78,25 @@ router.post("/", async (req, res) => {
       status: "confirmed"
     };
 
-    console.log("Número enviado:", savedOrder.customer.phone);
-
-    // Aqui depois tu pode salvar em banco.
-    console.log("Pedido recebido:", JSON.stringify(savedOrder, null, 2));
-
-    // Integração com WhatsApp
-    const message = `
-Pedido confirmado 🍗
+    const message = `Pedido confirmado 🍗
 
 Cliente: ${savedOrder.customer.name}
 
 Itens:
-${savedOrder.items.map(i => `- ${i.name} x${i.quantity}`).join("\n")}
+${savedOrder.items.map((item) => `- ${item.name} x${item.quantity}`).join("\n")}
 
-Total: R$ ${savedOrder.subtotal}
+Total: R$ ${Number(savedOrder.subtotal).toFixed(2)}
 
 Endereço:
-${savedOrder.address.street}, ${savedOrder.address.number}
+${savedOrder.address.street}, ${savedOrder.address.number} - ${savedOrder.address.district}
 
 Pagamento: ${savedOrder.payment.method}
 `;
 
-const whatsappResult = await sendWhatsAppMessage(
-  savedOrder.customer.phone,
-  message
-);
-
-await sendWhatsAppMessage("5551995043467", "teste direto");
+    const whatsappResult = await sendWhatsAppMessage(
+      savedOrder.customer.phone,
+      message
+    );
 
     return res.status(201).json({
       ok: true,
@@ -123,5 +114,3 @@ await sendWhatsAppMessage("5551995043467", "teste direto");
 });
 
 export default router;
-
-//só para dar commit mesmo, não tem nada de novo aqui, só pra atualizar o token da twilio que tava dando erro de autenticação.

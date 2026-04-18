@@ -215,7 +215,7 @@ async function handleCheckoutSubmit(event) {
   };
 
   try {
-    const response = await fetch("http://localhost:3000/api/orders", {
+    const response = await fetch("http://localhost:3001/api/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

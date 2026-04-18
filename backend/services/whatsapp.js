@@ -1,93 +1,31 @@
-function formatCurrency(value) {
-  return Number(value || 0).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL"
-  });
-}
-
-function buildItemsText(items) {
-  return items
-    .map((item) => {
-      const total = Number(item.price) * Number(item.quantity);
-      return `${item.name} x${item.quantity} - ${formatCurrency(total)}`;
-    })
-    .join(", ");
-}
-
-export async function sendWhatsAppTemplate(order) {
-  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  const templateName = process.env.WHATSAPP_TEMPLATE_NAME || "pedido_confirmado";
-  const templateLanguage = process.env.WHATSAPP_TEMPLATE_LANGUAGE || "pt_BR";
-
-  if (!accessToken || !phoneNumberId) {
-    return {
-      sent: false,
-      reason: "Credenciais do WhatsApp não configuradas."
-    };
-  }
-
-  const body = {
-    messaging_product: "whatsapp",
-    to: order.customer.phone,
-    type: "template",
-    template: {
-      name: templateName,
-      language: {
-        code: templateLanguage
-      },
-      components: [
-        {
-          type: "body",
-          parameters: [
-            { type: "text", text: order.customer.name },
-            {
-              type: "text",
-              text: buildItemsText(order.items).slice(0, 1024)
-            },
-            {
-              type: "text",
-              text: formatCurrency(order.subtotal)
-            },
-            {
-              type: "text",
-              text: `${order.address.street}, ${order.address.number} - ${order.address.district}`
-            },
-            {
-              type: "text",
-              text: order.payment.method
-            }
-          ]
-        }
-      ]
-    }
-  };
-
-  const response = await fetch(
-    `https://graph.facebook.com/v23.0/${phoneNumberId}/messages`,
-    {
+export async function sendWhatsAppMessage(to, message) {
+  try {
+    const response = await fetch("http://localhost:8083/message/sendText/Teste", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "apikey": "429683C4C977415CAAFCCE10F7D57E11"
       },
-      body: JSON.stringify(body)
-    }
-  );
+      body: JSON.stringify({
+        number: 5551995043467,
+        text: "teste evolution"
+      })
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if (!response.ok) {
-    console.error("Erro WhatsApp:", data);
+    console.log("Resposta Evolution:", data);
 
     return {
-      sent: false,
-      error: data
+      success: true,
+      data
+    };
+  } catch (error) {
+    console.error("Erro Evolution:", error);
+
+    return {
+      success: false,
+      error
     };
   }
-
-  return {
-    sent: true,
-    data
-  };
 }
