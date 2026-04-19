@@ -1,5 +1,5 @@
 import express from "express";
-import { sendWhatsAppMessage } from "../services/twilio.js";
+import { sendWhatsAppMessage } from "../services/evolution.js";
 
 const router = express.Router();
 
