@@ -21,6 +21,12 @@ const checkoutOverlay = document.querySelector("[data-checkout-overlay]");
 const checkoutCloseButtons = document.querySelectorAll("[data-checkout-close]");
 const checkoutBackButton = document.querySelector("[data-checkout-back]");
 const checkoutForm = document.querySelector("[data-checkout-form]");
+const customerZipcodeInput = document.querySelector("#customerZipcode");
+const customerStreetInput = document.querySelector("#customerStreet");
+const customerDistrictInput = document.querySelector("#customerDistrict");
+const customerCityInput = document.querySelector("#customerCity");
+const customerStateInput = document.querySelector("#customerState");
+const customerNumberInput = document.querySelector("#customerNumber");
 const checkoutSummaryItems = document.querySelector("[data-checkout-summary-items]");
 const checkoutTotal = document.querySelector("[data-checkout-total]");
 const paymentMethodField = document.querySelector("#paymentMethod");
@@ -169,6 +175,9 @@ function getCheckoutData() {
   return {
     name: formData.get("customerName")?.toString().trim() || "",
     phone: formData.get("customerPhone")?.toString().trim() || "",
+    zipcode: formData.get("customerZipcode")?.toString().trim() || "",
+    city: formData.get("customerCity")?.toString().trim() || "",
+    state: formData.get("customerState")?.toString().trim() || "",
     street: formData.get("customerStreet")?.toString().trim() || "",
     number: formData.get("customerNumber")?.toString().trim() || "",
     district: formData.get("customerDistrict")?.toString().trim() || "",
@@ -180,6 +189,53 @@ function getCheckoutData() {
   };
 }
 
+function formatZipcode(value) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+
+  if (digits.length <= 5) {
+    return digits;
+  }
+
+  return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+}
+
+async function fetchAddressByCep(cep) {
+  const cleanCep = cep.replace(/\D/g, "");
+
+  if (cleanCep.length !== 8) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+    const data = await response.json();
+
+    if (data.erro) {
+      alert("CEP não encontrado.");
+      return;
+    }
+
+    if (customerStreetInput) {
+      customerStreetInput.value = data.logradouro || "";
+    }
+
+    if (customerDistrictInput) {
+      customerDistrictInput.value = data.bairro || "";
+    }
+
+    if (customerCityInput) {
+      customerCityInput.value = data.localidade || "";
+    }
+
+    if (customerStateInput) {
+      customerStateInput.value = data.uf || "";
+    }
+  } catch (error) {
+    console.error("Erro ao buscar CEP:", error);
+    alert("Não foi possível buscar o CEP.");
+  }
+}
+
 async function handleCheckoutSubmit(event) {
   event.preventDefault();
 
@@ -187,6 +243,25 @@ async function handleCheckoutSubmit(event) {
     alert("Seu carrinho está vazio.");
     return;
   }
+
+  const houseNumber = document.querySelector("#customerNumber")?.value?.trim() || "";
+const street = document.querySelector("#customerStreet")?.value?.trim() || "";
+const district = document.querySelector("#customerDistrict")?.value?.trim() || "";
+
+if (!street || street.length < 5) {
+  alert("Digite um endereço válido.");
+  return;
+}
+
+if (!/^\d+$/.test(houseNumber)) {
+  alert("O número da casa deve conter apenas números.");
+  return;
+}
+
+if (!district || district.length < 3) {
+  alert("Digite um bairro válido.");
+  return;
+}
 
   const checkoutData = getCheckoutData();
 
@@ -198,6 +273,9 @@ async function handleCheckoutSubmit(event) {
       phone: checkoutData.phone
     },
     address: {
+      zipcode: checkoutData.zipcode,
+      city: checkoutData.city,
+      state: checkoutData.state,
       street: checkoutData.street,
       number: checkoutData.number,
       district: checkoutData.district,
@@ -581,6 +659,28 @@ if (checkoutBackButton) {
 
 if (checkoutForm) {
   checkoutForm.addEventListener("submit", handleCheckoutSubmit);
+}
+
+if (customerNumberInput) {
+  customerNumberInput.addEventListener("input", () => {
+    customerNumberInput.value = customerNumberInput.value.replace(/\D/g, "");
+  });
+}
+
+if (customerZipcodeInput) {
+  customerZipcodeInput.addEventListener("input", () => {
+    customerZipcodeInput.value = formatZipcode(customerZipcodeInput.value);
+  });
+
+  customerZipcodeInput.addEventListener("blur", () => {
+    fetchAddressByCep(customerZipcodeInput.value);
+  });
+}
+
+if (customerNumberInput) {
+  customerNumberInput.addEventListener("input", () => {
+    customerNumberInput.value = customerNumberInput.value.replace(/\D/g, "");
+  });
 }
 
 renderCategoryFilters();

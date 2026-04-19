@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Vendedor</title>
+  <link rel="stylesheet" href="./assets/css/painel.css">
+</head>
+<body>
+  <main class="seller-panel">
+    <header class="seller-panel-header">
+      <div>
+        <p class="seller-eyebrow">Gestão</p>
+        <h1>Painel do vendedor</h1>
+      </div>
+
+      <button class="refresh-btn" type="button" id="refreshOrdersBtn">
+        Atualizar pedidos
+      </button>
+    </header>
+
+    <section class="orders-section">
+      <div class="orders-list" id="ordersList">
+        <p class="orders-empty">Nenhum pedido encontrado.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="./assets/js/painel.js"></script>
+</body>
+</html>

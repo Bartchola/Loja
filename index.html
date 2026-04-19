@@ -167,21 +167,37 @@
         </div>
       </div>
 
-      <div class="checkout-field">
-        <label for="customerStreet">Endereço</label>
-        <input id="customerStreet" name="customerStreet" type="text" placeholder="Rua / Avenida" required>
+      <div class="checkout-grid">
+        <div class="checkout-field">
+          <label for="customerZipcode">CEP</label>
+          <input id="customerZipcode" name="customerZipcode" type="text" placeholder="00000-000" maxlength="9" inputmode="numeric" required>
+        </div>
+
+        <div class="checkout-field">
+          <label for="customerStreet">Endereço</label>
+          <input id="customerStreet" name="customerStreet" type="text" placeholder="Rua / Avenida" required>
+        </div>
       </div>
 
       <div class="checkout-grid checkout-grid-address">
         <div class="checkout-field">
           <label for="customerNumber">Número</label>
-          <input id="customerNumber" name="customerNumber" type="text" placeholder="123" required>
+          <input id="customerNumber" name="customerNumber" type="number" placeholder="123" min="1" step="1" inputmode="numeric" required>
         </div>
 
         <div class="checkout-field">
           <label for="customerDistrict">Bairro</label>
           <input id="customerDistrict" name="customerDistrict" type="text" placeholder="Seu bairro" required>
         </div>
+      </div>
+
+      <div class="checkout-grid">
+        <div class="checkout-field">
+          <label for="customerCity">Cidade</label>
+          <input id="customerCity" name="customerCity" type="text" placeholder="Cidade" required>
+        </div>
+
+        
       </div>
 
       <div class="checkout-grid">

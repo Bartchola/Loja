@@ -1,0 +1,372 @@
+# Guia simples para rodar o projeto + Evolution API
+
+## O que precisa instalar
+
+Antes de tudo, instale:
+
+* **Git**
+* **Node.js**
+* **Docker Desktop**
+
+### Links
+
+* Git: `https://git-scm.com/`
+* Node.js: `https://nodejs.org/`
+* Docker Desktop: `https://www.docker.com/products/docker-desktop/`
+
+---
+
+## 1. Baixar o projeto do GitHub
+
+No terminal, rode:
+
+```bash
+git clone https://github.com/Bartchola/Loja.git
+cd Loja
+```
+
+---
+
+## 2. Instalar o backend
+
+Entre na pasta do backend:
+
+```bash
+cd backend
+npm install
+```
+
+Isso vai criar a pasta `node_modules` automaticamente.
+
+### Sim, precisa instalar o Node.js
+
+Sem ele, os comandos `npm install` e `npm run dev` não funcionam.
+
+---
+
+## 3. Criar o arquivo `.env` do backend
+
+Dentro da pasta `backend`, crie um arquivo chamado:
+
+```text
+.env
+```
+
+E coloque isso dentro:
+
+```env
+PORT=3001
+FRONTEND_URL=http://127.0.0.1:5500
+EVOLUTION_API_URL=http://localhost:8083
+EVOLUTION_API_KEY=SUA_API_KEY_AQUI
+EVOLUTION_INSTANCE=Teste
+```
+
+---
+
+## 4. Criar a pasta da Evolution
+
+Volte para a raiz do projeto e crie a pasta:
+
+```bash
+cd ..
+mkdir evolution
+cd evolution
+```
+
+---
+
+## 5. Criar o `.env` da Evolution
+
+Dentro da pasta `evolution`, crie outro arquivo chamado:
+
+```text
+.env
+```
+
+E coloque isso dentro:
+
+```env
+SERVER_TYPE=http
+SERVER_PORT=8080
+SERVER_URL=http://localhost:8083
+
+AUTHENTICATION_API_KEY=SUA_API_KEY_AQUI
+AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
+LANGUAGE=en
+
+CORS_ORIGIN=*
+CORS_METHODS=GET,POST,PUT,DELETE
+CORS_CREDENTIALS=true
+
+LOG_LEVEL=ERROR,WARN,DEBUG,INFO
+
+DATABASE_PROVIDER=postgresql
+DATABASE_CONNECTION_URI=postgresql://postgres:password@postgres:5432/evolution_db?schema=public
+DATABASE_CONNECTION_CLIENT_NAME=evolution_exchange
+
+CACHE_REDIS_ENABLED=true
+CACHE_REDIS_URI=redis://redis:6379/2
+CACHE_REDIS_PREFIX_KEY=evolution
+CACHE_REDIS_SAVE_INSTANCES=false
+CACHE_LOCAL_ENABLED=false
+```
+
+---
+
+## 6. Criar o `docker-compose.yml`
+
+Ainda dentro da pasta `evolution`, crie o arquivo:
+
+```text
+docker-compose.yml
+```
+
+E coloque isso:
+
+```yaml
+version: "3.8"
+
+services:
+  evolution:
+    container_name: evolution_api
+    image: atendai/evolution-api
+    restart: always
+    ports:
+      - "8083:8080"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15
+    container_name: evolution_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: evolution_db
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    container_name: evolution_redis
+    restart: always
+    ports:
+      - "6379:6379"
+```
+
+---
+
+## 7. Subir a Evolution API
+
+Dentro da pasta `evolution`, rode:
+
+```bash
+docker-compose up -d
+```
+
+---
+
+## 8. Abrir o painel da Evolution
+
+No navegador, abra:
+
+```text
+http://localhost:8083/manager
+```
+
+---
+
+## 9. Criar a instância
+
+No painel da Evolution:
+
+* clique em **Create Instance**
+* coloque o nome da instância, por exemplo:
+
+```text
+Teste
+```
+
+* conecte o WhatsApp pelo QR Code
+
+---
+
+## 10. Rodar o backend
+
+Abra outro terminal, vá para a pasta `backend`:
+
+```bash
+cd backend
+npm run dev
+```
+
+Se estiver tudo certo, vai aparecer algo como:
+
+```text
+Servidor rodando em http://localhost:3001
+```
+
+---
+
+## 11. Rodar o front-end
+
+Se você usa Live Server no VS Code, pode abrir o `index.html` com ele.
+
+Ou pode usar qualquer servidor local.
+
+Exemplo com VS Code:
+
+* abrir o projeto
+* clicar com botão direito no `index.html`
+* **Open with Live Server**
+
+---
+
+## 12. Ordem certa para ligar tudo
+
+Sempre faça nesta ordem:
+
+### Evolution
+
+```bash
+cd evolution
+docker-compose up -d
+```
+
+### Backend
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+### Front
+
+Abrir `index.html` com Live Server
+
+---
+
+## 13. Arquivos que NÃO devem ir para o GitHub
+
+Crie um arquivo `.gitignore` na raiz do projeto com isso:
+
+```gitignore
+node_modules/
+.env
+backend/node_modules/
+backend/.env
+evolution/.env
+```
+
+---
+
+## 14. O que vai para o GitHub
+
+Pode subir normalmente:
+
+* `index.html`
+* `painel.html`
+* `assets/`
+* `backend/package.json`
+* `backend/package-lock.json`
+* `backend/server.js`
+* `backend/routes/`
+* `backend/services/`
+* `evolution/docker-compose.yml`
+* `.gitignore`
+
+---
+
+## 15. Se baixar em outro computador
+
+No outro PC, faça:
+
+```bash
+git clone https://github.com/Bartchola/Loja.git
+cd Loja/backend
+npm install
+```
+
+Depois recrie manualmente:
+
+* `backend/.env`
+* `evolution/.env`
+
+Esses arquivos não vão para o GitHub.
+
+---
+
+## 16. Resumo rápido
+
+### Precisa baixar Node?
+
+**Sim**
+
+### Precisa baixar Docker?
+
+**Sim**
+
+### Precisa criar as pastas manualmente?
+
+**Sim**, se elas ainda não estiverem no projeto:
+
+* `backend`
+* `evolution`
+
+### Precisa criar `.env`?
+
+**Sim**, dois:
+
+* um no `backend`
+* outro na `evolution`
+
+---
+
+## 17. Comandos principais
+
+### Instalar backend
+
+```bash
+cd backend
+npm install
+```
+
+### Rodar backend
+
+```bash
+npm run dev
+```
+
+### Subir Evolution
+
+```bash
+cd evolution
+docker-compose up -d
+```
+
+### Parar Evolution
+
+```bash
+docker-compose down
+```
+
+---
+
+## 18. Se der erro
+
+Confira:
+
+* se o Node está instalado
+* se o Docker está aberto
+* se o `.env` do backend existe
+* se o `.env` da evolution existe
+* se a instância da Evolution está conectada
+* se a API key está igual nos dois `.env`
+
+---

@@ -3,6 +3,8 @@ import { sendWhatsAppMessage } from "../services/evolution.js";
 
 const router = express.Router();
 
+const orders = [];
+
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
@@ -26,16 +28,20 @@ function validateOrder(order) {
     errors.push("WhatsApp do cliente é obrigatório.");
   }
 
-  if (!order.address || !isNonEmptyString(order.address.street)) {
-    errors.push("Rua é obrigatória.");
+  if (!order.address || !isNonEmptyString(order.address.street) || order.address.street.trim().length < 5) {
+    errors.push("Endereço inválido.");
   }
 
   if (!order.address || !isNonEmptyString(order.address.number)) {
-    errors.push("Número é obrigatório.");
+    errors.push("Número do endereço é obrigatório.");
   }
 
-  if (!order.address || !isNonEmptyString(order.address.district)) {
-    errors.push("Bairro é obrigatório.");
+  if (!order.address || !/^\d+$/.test(String(order.address.number).trim())) {
+    errors.push("Número do endereço deve conter apenas números.");
+  }
+
+  if (!order.address || !isNonEmptyString(order.address.district) || order.address.district.trim().length < 3) {
+    errors.push("Bairro inválido.");
   }
 
   if (!order.payment || !isNonEmptyString(order.payment.method)) {
@@ -48,6 +54,50 @@ function validateOrder(order) {
 
   return errors;
 }
+
+router.get("/", (_req, res) => {
+  return res.json({
+    ok: true,
+    orders: [...orders].reverse()
+  });
+});
+
+router.patch("/:id/status", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const allowedStatuses = [
+    "Recebido",
+    "Em preparo",
+    "Saiu para entrega",
+    "Pronto para retirada",
+    "Finalizado"
+  ];
+
+  if (!allowedStatuses.includes(status)) {
+    return res.status(400).json({
+      ok: false,
+      message: "Status inválido."
+    });
+  }
+
+  const order = orders.find((item) => item.id === id);
+
+  if (!order) {
+    return res.status(404).json({
+      ok: false,
+      message: "Pedido não encontrado."
+    });
+  }
+
+  order.status = status;
+  order.updatedAt = new Date().toISOString();
+
+  return res.json({
+    ok: true,
+    order
+  });
+});
 
 router.post("/", async (req, res) => {
   try {
@@ -75,8 +125,11 @@ router.post("/", async (req, res) => {
       items: order.items,
       subtotal: order.subtotal,
       createdAt: new Date().toISOString(),
-      status: "confirmed"
+      updatedAt: null,
+      status: "Recebido"
     };
+
+    orders.push(savedOrder);
 
     const message = `Pedido confirmado 🍗
 
@@ -97,6 +150,16 @@ Pagamento: ${savedOrder.payment.method}
       savedOrder.customer.phone,
       message
     );
+
+    console.log("Resultado Evolution:", whatsappResult);
+
+    if (whatsappResult?.error) {
+      return res.status(500).json({
+        ok: false,
+        message: "Falha ao enviar mensagem no WhatsApp.",
+        error: whatsappResult.error
+      });
+    }
 
     return res.status(201).json({
       ok: true,
