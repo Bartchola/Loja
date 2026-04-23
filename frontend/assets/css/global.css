@@ -1,15 +1,18 @@
 :root {
-  --bg: #f6efe5;
-  --surface: rgba(255, 250, 243, 0.92);
+  --bg: #f6f3ee;
+  --surface: #ffffff;
+  --surface-2: #fdfaf6;
   --surface-strong: #fff8ef;
-  --text: #23150f;
-  --muted: #72584c;
+  --text: #1f1b16;
+  --muted: #6f655c;
   --accent: #d94f04;
   --accent-dark: #9f3400;
-  --border: rgba(86, 48, 24, 0.12);
-  --shadow: 0 20px 60px rgba(76, 38, 9, 0.12);
-  --radius-lg: 28px;
-  --radius-md: 18px;
+  --border: #e8dfd4;
+  --shadow: 0 10px 30px rgba(31, 27, 22, 0.08);
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
   --container: 1180px;
 }
 
@@ -26,8 +29,8 @@ body {
   font-family: "Work Sans", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(255, 185, 91, 0.35), transparent 26%),
-    linear-gradient(180deg, #fff8ef 0%, var(--bg) 100%);
+    radial-gradient(circle at top left, rgba(217, 79, 4, 0.08), transparent 28%),
+    linear-gradient(180deg, #fffaf5 0%, var(--bg) 100%);
 }
 
 body.menu-open {
@@ -130,7 +133,7 @@ a {
   height: 48px;
   padding: 0;
   border: 0;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: var(--surface-strong);
   cursor: pointer;
 }
@@ -163,9 +166,9 @@ a {
 
 .hero-content {
   padding: 48px;
-  border-radius: 40px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 245, 232, 0.95));
-  border: 1px solid rgba(132, 80, 43, 0.08);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow);
 }
 
@@ -249,13 +252,13 @@ a {
   .header-shell {
     gap: 18px;
     padding: 12px 14px;
-    border-radius: 22px;
+    border-radius: var(--radius-lg);
   }
 
   .brand-mark {
     width: 46px;
     height: 46px;
-    border-radius: 14px;
+    border-radius: var(--radius-md);
     font-size: 1.45rem;
   }
 
@@ -273,7 +276,7 @@ a {
 
   .hero-content {
     padding: 32px 22px;
-    border-radius: 28px;
+    border-radius: var(--radius-lg);
   }
 }
 
@@ -297,7 +300,7 @@ img {
   height: 50px;
   padding: 0;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: var(--surface-strong);
   color: var(--text);
   cursor: pointer;
@@ -346,7 +349,7 @@ img {
   margin-bottom: 22px;
   padding: 28px 32px;
   border-radius: var(--radius-lg);
-  background: rgba(255, 251, 246, 0.7);
+  background: var(--surface-2);
   border: 1px solid var(--border);
 }
 
@@ -364,34 +367,71 @@ img {
 }
 
 .category-filters {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
   margin-bottom: 24px;
 }
 
 .category-filter-btn {
-  padding: 10px 16px;
+  background: transparent;
+  color: var(--text);
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.category-filter-btn:hover {
+  background: #f3ece4;
+}
+
+.category-filter-btn.is-active,
+.category-filter-btn.active {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(159, 52, 0, 0.28);
+}
+
+/* ===== TABS (igual painel) ===== */
+.tabs {
+  display: inline-flex;
+  gap: 10px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.75);
   border: 1px solid var(--border);
   border-radius: 999px;
-  background: rgba(255, 251, 246, 0.92);
-  color: var(--muted);
-  font-weight: 700;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.tab-btn {
+  background: transparent;
+  color: var(--text);
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-weight: 600;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s ease;
 }
 
-.category-filter-btn:hover,
-.category-filter-btn:focus-visible {
-  transform: translateY(-1px);
-  background: rgba(217, 79, 4, 0.08);
-  color: var(--accent-dark);
+.tab-btn:hover {
+  background: #f3ece4;
 }
 
-.category-filter-btn.is-active {
-  background: var(--accent);
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
   color: #fff;
-  border-color: var(--accent);
+  box-shadow: 0 8px 18px rgba(159, 52, 0, 0.28);
 }
 
 .menu-grid {
@@ -402,8 +442,8 @@ img {
 
 .menu-card {
   overflow: hidden;
-  border-radius: 24px;
-  background: rgba(255, 251, 246, 0.95);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
 }
@@ -507,12 +547,13 @@ img {
   }
 
   .category-filters {
-    gap: 10px;
+    gap: 8px;
+    padding: 6px;
   }
 
   .category-filter-btn {
     font-size: 0.88rem;
-    padding: 9px 14px;
+    padding: 10px 18px;
   }
 
   .menu-grid {
@@ -540,11 +581,11 @@ img {
     display: inline-grid;
     width: 58px;
     height: 58px;
-    border-radius: 18px;
+    border-radius: var(--radius-lg);
     border: none;
     background: var(--accent);
     color: #fff;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 18px 40px rgba(31, 27, 22, 0.22);
     z-index: 999;
   }
 
@@ -569,13 +610,14 @@ img {
     bottom: 14px;
     width: 54px;
     height: 54px;
+    border-radius: var(--radius-md);
   }
 }
 
 .cart-drawer-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(35, 21, 15, 0.48);
+    background: rgba(31, 27, 22, 0.48);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -591,9 +633,9 @@ img {
     height: 100dvh;
     display: grid;
     grid-template-rows: auto 1fr auto;
-    background: #fff8ef;
+    background: var(--surface);
     border-left: 1px solid var(--border);
-    box-shadow: -20px 0 50px rgba(35, 21, 15, 0.18);
+    box-shadow: -20px 0 50px rgba(31, 27, 22, 0.12);
     transform: translateX(100%);
     transition: transform 0.28s ease;
     z-index: 999;
@@ -620,7 +662,7 @@ body.cart-open .cart-drawer {
     gap: 16px;
     padding: 22px 22px 18px;
     border-bottom: 1px solid var(--border);
-    background: rgba(255, 251, 246, 0.96);
+    background: var(--surface-2);
 }
 
 .cart-drawer-eyebrow {
@@ -644,8 +686,8 @@ body.cart-open .cart-drawer {
     height: 46px;
     padding: 0;
     border: 1px solid var(--border);
-    border-radius: 14px;
-    background: #fff;
+    border-radius: var(--radius-md);
+    background: var(--surface);
     color: var(--text);
     cursor: pointer;
     display: inline-grid;
@@ -706,8 +748,8 @@ body.cart-open .cart-drawer {
     align-items: center;
     padding: 14px;
     border: 1px solid var(--border);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.9);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
 }
 
 .cart-item-image {
@@ -758,8 +800,8 @@ body.cart-open .cart-drawer {
     align-items: center;
     gap: 8px;
     padding: 6px;
-    border-radius: 999px;
-    background: #fff;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
     border: 1px solid var(--border);
 }
 
@@ -768,7 +810,7 @@ body.cart-open .cart-drawer {
     height: 32px;
     padding: 0;
     border: none;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     background: rgba(217, 79, 4, 0.12);
     color: var(--accent-dark);
     cursor: pointer;
@@ -802,7 +844,7 @@ body.cart-open .cart-drawer {
 .cart-drawer-footer {
     padding: 18px 22px 22px;
     border-top: 1px solid var(--border);
-    background: rgba(255, 251, 246, 0.98);
+    background: var(--surface-2);
     display: grid;
     gap: 16px;
 }
@@ -828,7 +870,7 @@ body.cart-open .cart-drawer {
 .cart-secondary-btn,
 .cart-primary-btn {
     min-height: 50px;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     border: none;
     cursor: pointer;
     font-weight: 700;
@@ -888,7 +930,7 @@ body.cart-open .cart-drawer {
 .checkout-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(35, 21, 15, 0.56);
+    background: rgba(31, 27, 22, 0.56);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -903,10 +945,10 @@ body.cart-open .cart-drawer {
     width: min(760px, calc(100% - 32px));
     max-height: calc(100dvh - 32px);
     overflow: hidden;
-    background: #fff8ef;
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 28px;
-    box-shadow: 0 30px 80px rgba(35, 21, 15, 0.22);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 30px 80px rgba(31, 27, 22, 0.15);
     transform: translate(-50%, -46%);
     opacity: 0;
     visibility: hidden;
@@ -941,7 +983,7 @@ body.checkout-open .checkout-modal {
     gap: 16px;
     padding: 22px 24px 18px;
     border-bottom: 1px solid var(--border);
-    background: rgba(255, 251, 246, 0.96);
+    background: var(--surface-2);
 }
 
 .checkout-eyebrow {
@@ -965,8 +1007,8 @@ body.checkout-open .checkout-modal {
     height: 46px;
     padding: 0;
     border: 1px solid var(--border);
-    border-radius: 14px;
-    background: #fff;
+    border-radius: var(--radius-md);
+    background: var(--surface);
     color: var(--text);
     cursor: pointer;
     display: inline-grid;
@@ -1016,8 +1058,8 @@ body.checkout-open .checkout-modal {
     min-height: 52px;
     padding: 0 16px;
     border: 1px solid var(--border);
-    border-radius: 16px;
-    background: #fff;
+    border-radius: var(--radius-md);
+    background: var(--surface);
     color: var(--text);
     font: inherit;
     outline: none;
@@ -1044,8 +1086,8 @@ body.checkout-open .checkout-modal {
 
 .checkout-summary {
     border: 1px solid var(--border);
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.9);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
     padding: 18px;
     display: grid;
     gap: 14px;
@@ -1101,7 +1143,7 @@ body.checkout-open .checkout-modal {
 .checkout-primary-btn {
     min-height: 52px;
     border: none;
-    border-radius: 999px;
+    border-radius: var(--radius-sm);
     font-weight: 700;
     cursor: pointer;
     transition: transform 0.2s ease, background-color 0.2s ease;
@@ -1133,7 +1175,7 @@ body.checkout-open .checkout-modal {
     .checkout-modal {
         width: calc(100% - 16px);
         max-height: calc(100dvh - 16px);
-        border-radius: 22px;
+        border-radius: var(--radius-lg);
     }
 
     .checkout-modal-header,
@@ -1147,4 +1189,38 @@ body.checkout-open .checkout-modal {
     .checkout-actions {
         grid-template-columns: 1fr;
     }
+}
+
+/* ===== TABS (igual painel) ===== */
+
+.tabs {
+  display: inline-flex;
+  gap: 10px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.tab-btn {
+  background: transparent;
+  color: var(--text);
+  padding: 12px 22px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #f3ece4;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(159, 52, 0, 0.28);
 }

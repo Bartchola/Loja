@@ -1,31 +1,110 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel do Vendedor</title>
-  <link rel="stylesheet" href="./frontend/assets/css/painel.css">
+  <link rel="stylesheet" href="../assets/css/painel.css" />
 </head>
 <body>
-  <main class="seller-panel">
-    <header class="seller-panel-header">
+  <div class="painel-container">
+    <header class="painel-header">
       <div>
-        <p class="seller-eyebrow">Gestão</p>
-        <h1>Painel do vendedor</h1>
+        <h1>Painel do Vendedor</h1>
+        <p>Gerencie pedidos e cardápio</p>
       </div>
 
-      <button class="refresh-btn" type="button" id="refreshOrdersBtn">
-        Atualizar pedidos
-      </button>
+      <div class="top-actions">
+        <button id="refreshAllBtn">Atualizar tudo</button>
+      </div>
     </header>
 
-    <section class="orders-section">
-      <div class="orders-list" id="ordersList">
-        <p class="orders-empty">Nenhum pedido encontrado.</p>
-      </div>
-    </section>
-  </main>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="pedidos">Pedidos</button>
+      <button class="tab-btn" data-tab="cardapio">Cardápio</button>
+    </nav>
 
-  <script src="./frontend/assets/js/painel.js"></script>
+    <main class="tab-content">
+      <section id="tab-pedidos" class="tab-panel active">
+        <div class="section-header">
+          <h2>Pedidos</h2>
+          <button id="refreshOrdersBtn">Atualizar pedidos</button>
+        </div>
+
+        <div id="ordersList" class="orders-list">
+          <p class="empty-message">Carregando pedidos...</p>
+        </div>
+      </section>
+
+      <section id="tab-cardapio" class="tab-panel">
+        <div class="section-header">
+          <h2>Gerenciar Cardápio</h2>
+
+          <div class="cardapio-actions">
+            <button id="refreshMenuBtn">Atualizar cardápio</button>
+            <button id="newItemBtn" class="primary-btn">Novo item</button>
+          </div>
+        </div>
+
+        <form id="menuForm" class="menu-form hidden">
+          <input type="hidden" id="itemId" />
+          <input type="hidden" id="currentImage" />
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="itemName">Nome</label>
+              <input type="text" id="itemName" required />
+            </div>
+
+            <div class="form-group">
+              <label for="itemCategory">Categoria</label>
+              <input type="text" id="itemCategory" required />
+            </div>
+
+            <div class="form-group">
+              <label for="itemPrice">Preço</label>
+              <input type="number" id="itemPrice" step="0.01" min="0" required />
+            </div>
+
+            <div class="form-group">
+              <label for="itemImageFile">Imagem do item</label>
+              <input type="file" id="itemImageFile" accept="image/*" />
+              <small id="currentImageLabel">Nenhuma imagem selecionada.</small>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="itemDescription">Descrição</label>
+              <textarea id="itemDescription" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" id="itemActive" checked />
+                Item ativo
+              </label>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" id="itemAvailable" checked />
+                Disponível hoje
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn">Salvar item</button>
+            <button type="button" id="cancelFormBtn">Cancelar</button>
+          </div>
+        </form>
+
+        <div id="menuList" class="menu-list">
+          <p class="empty-message">Carregando itens do cardápio...</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../assets/js/painel.js"></script>
 </body>
 </html>

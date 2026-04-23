@@ -1,10 +1,17 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import ordersRouter from "./routes/orders.js";
+import menuRouter from "./routes/menu.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
@@ -14,11 +21,17 @@ app.use(
 
 app.use(express.json());
 
+app.use(
+  "/assets/images",
+  express.static(path.join(__dirname, "../../frontend/assets/images"))
+);
+
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
 });
 
 app.use("/api/orders", ordersRouter);
+app.use("/api/menu", menuRouter);
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);

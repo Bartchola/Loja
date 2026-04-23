@@ -1,5 +1,3 @@
-const API_BASE = "http://localhost:3001";
-
 const brandName = document.querySelector("[data-brand-name]");
 const brandTagline = document.querySelector("[data-brand-tagline]");
 const brandMark = document.querySelector("[data-brand-mark]");
@@ -39,13 +37,13 @@ const cartItemsContainer = document.querySelector("[data-cart-items]");
 const cartSubtotal = document.querySelector("[data-cart-subtotal]");
 const cartClearButton = document.querySelector("[data-cart-clear]");
 const cartFinishButton = document.querySelector("[data-cart-finish]");
+
 const cartOpenButtons = document.querySelectorAll(".cart-button");
 
 const config = window.storeConfig || {};
 
 let cart = [];
 let activeCategory = "Todos";
-let menuItems = Array.isArray(config.menu) ? config.menu.map(normalizeMenuItem) : [];
 
 if (config.theme?.primaryColor) {
   root.style.setProperty("--accent", config.theme.primaryColor);
@@ -80,44 +78,16 @@ if (config.hero?.description && heroDescription) {
   heroDescription.textContent = config.hero.description;
 }
 
-function createPlaceholderImage() {
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">
-      <rect width="100%" height="100%" fill="#f2f2f2"/>
-      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#888" font-family="Arial" font-size="28">
-        Sem imagem
-      </text>
-    </svg>
-  `)}`;
-}
-
-function resolveImagePath(image) {
-  if (!image) return createPlaceholderImage();
-  if (/^https?:\/\//i.test(image) || image.startsWith("data:")) return image;
-  if (image.startsWith("/assets/")) return `${API_BASE}${image}`;
-  if (image.startsWith("../") || image.startsWith("./")) return image;
-  return `${API_BASE}/assets/images/${image}`;
-}
-
-function normalizeMenuItem(item) {
-  return {
-    ...item,
-    id: Number(item.id),
-    price: Number(item.price || 0),
-    image: resolveImagePath(item.image)
-  };
-}
-
 function formatPrice(value) {
-  return Number(value || 0).toLocaleString("pt-BR", {
+  return value.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL"
   });
 }
 
 function getCategories() {
-  if (!Array.isArray(menuItems) || !menuItems.length) return ["Todos"];
-  const categories = [...new Set(menuItems.map((item) => item.category).filter(Boolean))];
+  if (!Array.isArray(config.menu)) return ["Todos"];
+  const categories = [...new Set(config.menu.map((item) => item.category))];
   return ["Todos", ...categories];
 }
 
@@ -275,23 +245,23 @@ async function handleCheckoutSubmit(event) {
   }
 
   const houseNumber = document.querySelector("#customerNumber")?.value?.trim() || "";
-  const street = document.querySelector("#customerStreet")?.value?.trim() || "";
-  const district = document.querySelector("#customerDistrict")?.value?.trim() || "";
+const street = document.querySelector("#customerStreet")?.value?.trim() || "";
+const district = document.querySelector("#customerDistrict")?.value?.trim() || "";
 
-  if (!street || street.length < 5) {
-    alert("Digite um endereço válido.");
-    return;
-  }
+if (!street || street.length < 5) {
+  alert("Digite um endereço válido.");
+  return;
+}
 
-  if (!/^\d+$/.test(houseNumber)) {
-    alert("O número da casa deve conter apenas números.");
-    return;
-  }
+if (!/^\d+$/.test(houseNumber)) {
+  alert("O número da casa deve conter apenas números.");
+  return;
+}
 
-  if (!district || district.length < 3) {
-    alert("Digite um bairro válido.");
-    return;
-  }
+if (!district || district.length < 3) {
+  alert("Digite um bairro válido.");
+  return;
+}
 
   const checkoutData = getCheckoutData();
 
@@ -323,7 +293,7 @@ async function handleCheckoutSubmit(event) {
   };
 
   try {
-    const response = await fetch(`${API_BASE}/api/orders`, {
+    const response = await fetch("http://localhost:3001/api/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -358,6 +328,7 @@ async function handleCheckoutSubmit(event) {
     }
 
     closeCheckout();
+
   } catch (error) {
     console.error(error);
     alert("Erro ao conectar com o servidor.");
@@ -414,6 +385,26 @@ function clearCart() {
   cart = [];
   updateCartCount();
   renderCart();
+}
+
+function getWhatsAppLink() {
+  const phone = config.contact?.whatsapp || "";
+  if (!phone) return null;
+
+  const orderLines = cart.map((item) => {
+    const lineTotal = item.price * item.quantity;
+    return `• ${item.name} x${item.quantity} — ${formatPrice(lineTotal)}`;
+  });
+
+  const message = [
+    `Olá! Quero fazer este pedido na ${config.brand?.name || "loja"}:`,
+    "",
+    ...orderLines,
+    "",
+    `Subtotal: ${formatPrice(getCartSubtotal())}`
+  ].join("\n");
+
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
 function finishOrder() {
@@ -532,21 +523,12 @@ function renderCategoryFilters() {
 }
 
 function renderMenu() {
-  if (!menuGrid || !Array.isArray(menuItems)) return;
+  if (!menuGrid || !Array.isArray(config.menu)) return;
 
   const filteredItems =
     activeCategory === "Todos"
-      ? menuItems
-      : menuItems.filter((item) => item.category === activeCategory);
-
-  if (!filteredItems.length) {
-    menuGrid.innerHTML = `
-      <div class="cart-empty-state">
-        <strong>Nenhum item disponível nesta categoria.</strong>
-      </div>
-    `;
-    return;
-  }
+      ? config.menu
+      : config.menu.filter((item) => item.category === activeCategory);
 
   menuGrid.innerHTML = filteredItems
     .map(
@@ -580,41 +562,13 @@ function renderMenu() {
   menuGrid.querySelectorAll("[data-add-to-cart]").forEach((button) => {
     button.addEventListener("click", () => {
       const itemId = Number(button.getAttribute("data-add-to-cart"));
-      const selectedItem = menuItems.find((item) => item.id === itemId);
+      const selectedItem = config.menu.find((item) => item.id === itemId);
 
       if (selectedItem) {
         addToCart(selectedItem);
       }
     });
   });
-}
-
-async function loadMenuFromApi() {
-  try {
-    const response = await fetch(`${API_BASE}/api/menu`);
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result?.message || "Erro ao carregar cardápio.");
-    }
-
-    const apiItems = Array.isArray(result.items) ? result.items : [];
-    menuItems = apiItems.map(normalizeMenuItem);
-
-    if (!getCategories().includes(activeCategory)) {
-      activeCategory = "Todos";
-    }
-
-    renderCategoryFilters();
-    renderMenu();
-  } catch (error) {
-    console.error("Erro ao carregar cardápio da API:", error);
-
-    menuItems = Array.isArray(config.menu) ? config.menu.map(normalizeMenuItem) : [];
-    activeCategory = "Todos";
-    renderCategoryFilters();
-    renderMenu();
-  }
 }
 
 if (menuToggle && siteNav) {
@@ -723,6 +677,13 @@ if (customerZipcodeInput) {
   });
 }
 
+if (customerNumberInput) {
+  customerNumberInput.addEventListener("input", () => {
+    customerNumberInput.value = customerNumberInput.value.replace(/\D/g, "");
+  });
+}
+
+renderCategoryFilters();
+renderMenu();
 renderCart();
 updateCartCount();
-loadMenuFromApi();
