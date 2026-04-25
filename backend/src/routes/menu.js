@@ -222,4 +222,39 @@ router.patch("/:id/toggle-available", (req, res) => {
   }
 });
 
+router.delete("/:id", (req, res) => {
+  try {
+    const menu = readMenu();
+
+    const itemExists = menu.some(
+      (item) => String(item.id) === String(req.params.id)
+    );
+
+    if (!itemExists) {
+      return res.status(404).json({
+        ok: false,
+        message: "Item não encontrado."
+      });
+    }
+
+    const updatedMenu = menu.filter(
+      (item) => String(item.id) !== String(req.params.id)
+    );
+
+    writeMenu(updatedMenu);
+
+    return res.json({
+      ok: true,
+      message: "Item excluído com sucesso."
+    });
+  } catch (error) {
+    console.error("Erro ao excluir item:", error);
+
+    return res.status(500).json({
+      ok: false,
+      message: "Erro ao excluir item."
+    });
+  }
+});
+
 export default router;

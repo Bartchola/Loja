@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avaliar Pedido</title>
+  <link rel="stylesheet" href="/assets/css/painel.css" />
+</head>
+<body>
+  <div class="painel-container">
+    <header class="painel-header">
+      <div>
+        <h1>Avalie seu pedido</h1>
+        <p>Sua opinião ajuda a melhorar nosso atendimento.</p>
+      </div>
+    </header>
+
+    <form id="reviewForm" class="menu-form">
+      <input type="hidden" id="orderId" />
+
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="rating">Nota</label>
+          <select id="rating" required>
+            <option value="">Selecione</option>
+            <option value="5">5 - Excelente</option>
+            <option value="4">4 - Muito bom</option>
+            <option value="3">3 - Bom</option>
+            <option value="2">2 - Regular</option>
+            <option value="1">1 - Ruim</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="comment">Comentário</label>
+          <textarea id="comment" rows="5" placeholder="Conte como foi sua experiência"></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="primary-btn">Enviar avaliação</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="../assets/js/avaliar.js"></script>
+</body>
+</html>

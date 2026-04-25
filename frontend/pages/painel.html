@@ -15,6 +15,8 @@
       </div>
 
       <div class="top-actions">
+        <button id="toggleStoreBtn" type="button">Carregando loja...</button>
+        <button id="enableSoundBtn" type="button">Ativar som</button>
         <button id="refreshAllBtn">Atualizar tudo</button>
       </div>
     </header>
@@ -22,14 +24,48 @@
     <nav class="tabs">
       <button class="tab-btn active" data-tab="pedidos">Pedidos</button>
       <button class="tab-btn" data-tab="cardapio">Cardápio</button>
+      <button class="tab-btn" data-tab="avaliacoes">Avaliações</button>
     </nav>
 
     <main class="tab-content">
       <section id="tab-pedidos" class="tab-panel active">
+        <div class="dashboard-grid">
+  <div class="dashboard-card">
+    <span>Pedidos hoje</span>
+    <strong id="dashboardOrdersToday">0</strong>
+  </div>
+
+  <div class="dashboard-card">
+    <span>Faturamento hoje</span>
+    <strong id="dashboardRevenueToday">R$ 0,00</strong>
+  </div>
+
+  <div class="dashboard-card">
+    <span>Em preparo</span>
+    <strong id="dashboardPreparing">0</strong>
+  </div>
+
+  <div class="dashboard-card">
+    <span>Finalizados</span>
+    <strong id="dashboardFinished">0</strong>
+  </div>
+</div>
         <div class="section-header">
-          <h2>Pedidos</h2>
-          <button id="refreshOrdersBtn">Atualizar pedidos</button>
-        </div>
+  <h2>Pedidos</h2>
+
+  <div class="order-filter-actions">
+    <select id="orderStatusFilter">
+      <option value="Todos">Todos</option>
+      <option value="Recebido">Recebido</option>
+      <option value="Em preparo">Em preparo</option>
+      <option value="Saiu para entrega">Saiu para entrega</option>
+      <option value="Pronto para retirada">Pronto para retirada</option>
+      <option value="Finalizado">Finalizado</option>
+    </select>
+
+    <button id="refreshOrdersBtn">Atualizar pedidos</button>
+  </div>
+</div>
 
         <div id="ordersList" class="orders-list">
           <p class="empty-message">Carregando pedidos...</p>
@@ -102,6 +138,28 @@
           <p class="empty-message">Carregando itens do cardápio...</p>
         </div>
       </section>
+      <section id="tab-avaliacoes" class="tab-panel">
+  <div class="section-header">
+    <h2>Avaliações</h2>
+    <button id="refreshReviewsBtn">Atualizar avaliações</button>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-card">
+      <span>Total de avaliações</span>
+      <strong id="reviewsTotal">0</strong>
+    </div>
+
+    <div class="dashboard-card">
+      <span>Média</span>
+      <strong id="reviewsAverage">0.0 ⭐</strong>
+    </div>
+  </div>
+
+  <div id="reviewsList" class="reviews-list">
+    <p class="empty-message">Carregando avaliações...</p>
+  </div>
+</section>
     </main>
   </div>
 

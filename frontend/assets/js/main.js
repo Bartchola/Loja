@@ -266,8 +266,25 @@ async function fetchAddressByCep(cep) {
   }
 }
 
+async function checkStoreIsOpen() {
+  try {
+    const response = await fetch(`${API_BASE}/api/store/status`);
+    const result = await response.json();
+
+    return Boolean(result.isOpen);
+  } catch {
+    return true;
+  }
+}
+
 async function handleCheckoutSubmit(event) {
   event.preventDefault();
+  const storeOpen = await checkStoreIsOpen();
+
+if (!storeOpen) {
+  alert("A loja está fechada no momento. Tente novamente mais tarde.");
+  return;
+}
 
   if (!cart.length) {
     alert("Seu carrinho está vazio.");
@@ -314,7 +331,7 @@ async function handleCheckoutSubmit(event) {
     },
     payment: {
       method: checkoutData.paymentMethod,
-      changeFor: checkoutData.changeFor
+      changeFor: checkoutData.changeFor || ""
     },
     notes: checkoutData.notes,
     items: cart,

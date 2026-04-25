@@ -8,15 +8,5 @@
     "image": "1776978387432-teste.png",
     "active": true,
     "available": true
-  },
-  {
-    "id": 2,
-    "name": "teste 2",
-    "category": "teste",
-    "description": "blablablabla",
-    "price": 99.99,
-    "image": "1776979868177-teste-2.png",
-    "active": true,
-    "available": true
   }
 ]
