@@ -1,5 +1,38 @@
 const API_BASE = "http://localhost:3001";
 
+const adminToken = localStorage.getItem("adminToken");
+
+if (!adminToken) {
+  window.location.href = "./login.html";
+}
+
+function getAuthHeaders(extraHeaders = {}) {
+  return {
+    ...extraHeaders,
+    Authorization: `Bearer ${adminToken}`
+  };
+}
+
+async function checkAdminAuth() {
+  try {
+    const response = await fetch(`${API_BASE}/api/auth/check`, {
+      headers: getAuthHeaders()
+    });
+
+    const result = await response.json();
+
+    if (!result.ok) {
+      localStorage.removeItem("adminToken");
+      window.location.href = "./login.html";
+    }
+  } catch {
+    localStorage.removeItem("adminToken");
+    window.location.href = "./login.html";
+  }
+}
+
+checkAdminAuth();
+
 const ordersList = document.getElementById("ordersList");
 const menuList = document.getElementById("menuList");
 
@@ -37,6 +70,7 @@ const itemAvailable = document.getElementById("itemAvailable");
 
 const tabButtons = document.querySelectorAll(".tab-btn");
 const tabPanels = document.querySelectorAll(".tab-panel");
+const logoutBtn = document.getElementById("logoutBtn");
 
 const orderStatuses = [
   "Recebido",
@@ -381,7 +415,9 @@ async function loadOrders() {
   try {
     ordersList.innerHTML = `<p class="empty-message">Carregando pedidos...</p>`;
 
-    const response = await fetch(`${API_BASE}/api/orders`);
+    const response = await fetch(`${API_BASE}/api/orders`, {
+      headers: getAuthHeaders()
+    });
     const result = await response.json();
 
     if (!response.ok) {
@@ -429,7 +465,9 @@ async function loadMenu() {
   try {
     menuList.innerHTML = `<p class="empty-message">Carregando itens do cardápio...</p>`;
 
-    const response = await fetch(`${API_BASE}/api/menu?admin=true`);
+    const response = await fetch(`${API_BASE}/api/menu?admin=true`, {
+      headers: getAuthHeaders()
+    });
     const result = await response.json();
 
     if (!response.ok) {
@@ -495,7 +533,9 @@ async function loadMenu() {
 
 async function editMenuItem(id) {
   try {
-    const response = await fetch(`${API_BASE}/api/menu/${id}`);
+    const response = await fetch(`${API_BASE}/api/menu/${id}`, {
+      headers: getAuthHeaders()
+    });
     const result = await response.json();
 
     if (!response.ok) {
@@ -529,7 +569,8 @@ async function editMenuItem(id) {
 async function toggleItemActive(id) {
   try {
     const response = await fetch(`${API_BASE}/api/menu/${id}/toggle-active`, {
-      method: "PATCH"
+      method: "PATCH",
+      headers: getAuthHeaders()
     });
 
     const result = await response.json();
@@ -548,7 +589,8 @@ async function toggleItemActive(id) {
 async function toggleItemAvailable(id) {
   try {
     const response = await fetch(`${API_BASE}/api/menu/${id}/toggle-available`, {
-      method: "PATCH"
+      method: "PATCH",
+      headers: getAuthHeaders()
     });
 
     const result = await response.json();
@@ -600,6 +642,7 @@ async function saveMenuItem(event) {
   try {
     const response = await fetch(url, {
       method,
+      headers: getAuthHeaders(),
       body: formData
     });
 
@@ -652,9 +695,18 @@ if (refreshReviewsBtn) {
   refreshReviewsBtn.addEventListener("click", loadReviews);
 }
 
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("adminToken");
+    window.location.href = "./login.html";
+  });
+}
+
 async function loadStoreStatus() {
   try {
-    const response = await fetch(`${API_BASE}/api/store/status`);
+    const response = await fetch(`${API_BASE}/api/store/status`, {
+      headers: getAuthHeaders()
+    });
     const result = await response.json();
 
     if (!response.ok) {
@@ -685,7 +737,7 @@ async function toggleStoreStatus() {
     const response = await fetch(`${API_BASE}/api/store/status`, {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         isOpen: !storeIsOpen
@@ -719,7 +771,9 @@ async function loadReviews() {
 
     reviewsList.innerHTML = `<p class="empty-message">Carregando avaliações...</p>`;
 
-    const response = await fetch(`${API_BASE}/api/store/reviews`);
+    const response = await fetch(`${API_BASE}/api/store/reviews`, {
+      headers: getAuthHeaders()
+    });
     const result = await response.json();
 
     if (!response.ok) {
@@ -772,7 +826,8 @@ async function deleteMenuItem(id) {
 
   try {
     const response = await fetch(`${API_BASE}/api/menu/${id}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: getAuthHeaders()
     });
 
     const result = await response.json();

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Painel do Vendedor</title>
+  <link rel="stylesheet" href="../assets/css/painel.css" />
+</head>
+<body>
+  <div class="painel-container">
+    <header class="painel-header">
+      <div>
+        <h1>Login do Painel</h1>
+        <p>Acesse para gerenciar pedidos e cardápio.</p>
+      </div>
+    </header>
+
+    <form id="loginForm" class="menu-form">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="username">Usuário</label>
+          <input type="text" id="username" required />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="password">Senha</label>
+          <input type="password" id="password" required />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="primary-btn">Entrar</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="../assets/js/login.js"></script>
+</body>
+</html>

@@ -77,7 +77,9 @@ router.post("/reviews", (req, res) => {
     });
   }
 
-  const alreadyReviewed = store.reviews?.some(
+  store.reviews = Array.isArray(store.reviews) ? store.reviews : [];
+
+  const alreadyReviewed = store.reviews.some(
     (review) => String(review.orderId) === String(orderId)
   );
 
@@ -90,18 +92,16 @@ router.post("/reviews", (req, res) => {
 
   const review = {
     id: Date.now(),
-    orderId,
+    orderId: String(orderId),
     rating: numericRating,
-    comment: comment || "",
+    comment: String(comment || "").trim(),
     createdAt: new Date().toISOString()
   };
 
-  store.reviews = Array.isArray(store.reviews) ? store.reviews : [];
   store.reviews.push(review);
-
   writeStore(store);
 
-  res.status(201).json({
+  return res.status(201).json({
     ok: true,
     review
   });

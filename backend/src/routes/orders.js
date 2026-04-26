@@ -114,6 +114,7 @@ function getStatusMessage(order, status) {
   const orderId = order.id || "";
   const subtotal = order.subtotal || order.total || 0;
   const paymentMethod = order.payment?.method || order.paymentMethod || "Não informado";
+  const reviewLink = `http://localhost:3001/pages/avaliar.html?orderId=${orderId}`;
 
   const messages = {
     "Recebido": `Olá, ${customerName}! ✅
@@ -158,7 +159,7 @@ Seu pedido #${orderId} foi finalizado.
 
 Esperamos que tenha gostado! Se puder, avalie seu pedido pelo link abaixo:
 
-http://localhost:3001/pages/avaliar.html?orderId=${orderId}
+${reviewLink}
 
 Sua opinião ajuda muito!`
   };

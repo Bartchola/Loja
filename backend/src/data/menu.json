@@ -8,5 +8,15 @@
     "image": "1776978387432-teste.png",
     "active": true,
     "available": true
+  },
+  {
+    "id": 2,
+    "name": "Teste 2",
+    "category": "Teste 1",
+    "description": "iudnasiundiuasdiua",
+    "price": 99.99,
+    "image": "1777165560548-teste-2.png",
+    "active": true,
+    "available": true
   }
 ]

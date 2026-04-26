@@ -1,3 +1,4 @@
+import { requireAdmin } from "./middlewares/auth.js";
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -7,6 +8,7 @@ import { fileURLToPath } from "url";
 import ordersRouter from "./routes/orders.js";
 import menuRouter from "./routes/menu.js";
 import storeRouter from "./routes/store.js";
+import authRouter from "./routes/auth.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -42,8 +44,9 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/orders", ordersRouter);
-app.use("/api/menu", menuRouter);
+app.use("/api/menu", requireAdmin, menuRouter);
 app.use("/api/store", storeRouter);
+app.use("/api/auth", authRouter);
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
