@@ -1,5 +1,12 @@
 const API_BASE = "http://localhost:3001";
 
+const storeClosedOverlay = document.getElementById("storeClosedOverlay");
+let isStoreOpen = true;
+
+const publicReviewsList = document.getElementById("publicReviewsList");
+
+const promoDayList = document.getElementById("promoDayList");
+
 const brandName = document.querySelector("[data-brand-name]");
 const brandTagline = document.querySelector("[data-brand-tagline]");
 const brandMark = document.querySelector("[data-brand-mark]");
@@ -42,6 +49,27 @@ const cartFinishButton = document.querySelector("[data-cart-finish]");
 const cartOpenButtons = document.querySelectorAll(".cart-button");
 
 const config = window.storeConfig || {};
+
+let toastTimeout = null;
+
+function showToast(message) {
+  let toast = document.querySelector(".toast-message");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "toast-message";
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimeout);
+
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 1800);
+}
 
 let cart = [];
 let activeCategory = "Todos";
@@ -104,6 +132,9 @@ function normalizeMenuItem(item) {
     ...item,
     id: Number(item.id),
     price: Number(item.price || 0),
+    promotionalPrice: item.promotionalPrice ? Number(item.promotionalPrice) : null,
+    isPromotion: Boolean(item.isPromotion),
+    promotionLabel: item.promotionLabel || "",
     image: resolveImagePath(item.image)
   };
 }
@@ -232,6 +263,10 @@ function formatZipcode(value) {
 async function fetchAddressByCep(cep) {
   const cleanCep = cep.replace(/\D/g, "");
 
+  if (!cleanCep) {
+    return;
+  }
+
   if (cleanCep.length !== 8) {
     return;
   }
@@ -278,6 +313,11 @@ async function checkStoreIsOpen() {
 }
 
 async function handleCheckoutSubmit(event) {
+  if (!isStoreOpen) {
+  alert("A loja está fechada no momento.");
+  return;
+}
+
   event.preventDefault();
   const storeOpen = await checkStoreIsOpen();
 
@@ -310,6 +350,14 @@ if (!storeOpen) {
     return;
   }
 
+  if (
+  !customerName.value.trim() ||
+  !customerPhone.value.trim()
+) {
+  alert("Preencha nome e telefone.");
+  return;
+}
+
   const checkoutData = getCheckoutData();
 
   if (!checkoutData) return;
@@ -320,15 +368,15 @@ if (!storeOpen) {
       phone: checkoutData.phone
     },
     address: {
-      zipcode: checkoutData.zipcode,
-      city: checkoutData.city,
-      state: checkoutData.state,
-      street: checkoutData.street,
-      number: checkoutData.number,
-      district: checkoutData.district,
-      complement: checkoutData.complement,
-      reference: checkoutData.reference
-    },
+  street: addressData.logradouro || streetInput.value,
+  number: numberInput.value,
+  district: addressData.bairro || districtInput.value,
+  city: addressData.localidade || "",
+  state: addressData.uf || "",
+  cep: cepValue || "",
+  complement: complementInput.value,
+  reference: referenceInput.value
+},
     payment: {
       method: checkoutData.paymentMethod,
       changeFor: checkoutData.changeFor || ""
@@ -382,19 +430,32 @@ if (!storeOpen) {
 }
 
 function addToCart(item) {
+  if (!isStoreOpen) {
+  alert("A loja está fechada no momento.");
+  return;
+}
+
+const finalPrice =
+  item.isPromotion && item.promotionalPrice
+    ? item.promotionalPrice
+    : item.price;
+
   const existingItem = cart.find((cartItem) => cartItem.id === item.id);
 
   if (existingItem) {
     existingItem.quantity += 1;
   } else {
     cart.push({
-      ...item,
-      quantity: 1
-    });
+  ...item,
+  price: finalPrice,
+  originalPrice: item.price,
+  quantity: 1
+});
   }
 
   updateCartCount();
   renderCart();
+  showToast(`${item.name} adicionado ao carrinho`);
   openCart();
 }
 
@@ -544,6 +605,7 @@ function renderCategoryFilters() {
       activeCategory = button.getAttribute("data-category");
       renderCategoryFilters();
       renderMenu();
+      renderPromoDay();
     });
   });
 }
@@ -576,12 +638,26 @@ function renderMenu() {
           <div class="menu-card-content">
             <div class="menu-card-top">
               <span class="menu-category">${item.category}</span>
+              ${
+  item.isPromotion
+    ? `<span class="promo-badge">${item.promotionLabel || "Promoção"}</span>`
+    : ""
+}
               <h3>${item.name}</h3>
               <p>${item.description}</p>
             </div>
 
             <div class="menu-card-bottom">
-              <strong>${formatPrice(item.price)}</strong>
+              <div class="price-area">
+  ${
+    item.isPromotion && item.promotionalPrice
+      ? `
+        <span class="old-price">${formatPrice(item.price)}</span>
+        <strong class="promo-price">${formatPrice(item.promotionalPrice)}</strong>
+      `
+      : `<strong>${formatPrice(item.price)}</strong>`
+  }
+</div>
 
               <button class="menu-add-btn" type="button" data-add-to-cart="${item.id}">
                 <i class="ti ti-plus" aria-hidden="true"></i>
@@ -608,29 +684,51 @@ function renderMenu() {
 
 async function loadMenuFromApi() {
   try {
-    const response = await fetch(`${API_BASE}/api/menu`);
+    if (menuGrid) {
+      menuGrid.innerHTML = `
+        <div class="cart-empty-state">
+          <strong>Carregando cardápio...</strong>
+        </div>
+      `;
+    }
+
+    const response = await fetch(`${API_BASE}/api/menu?t=${Date.now()}`);
     const result = await response.json();
 
     if (!response.ok) {
       throw new Error(result?.message || "Erro ao carregar cardápio.");
     }
 
-    const apiItems = Array.isArray(result.items) ? result.items : [];
+    const apiItems = Array.isArray(result.items)
+      ? result.items
+      : Array.isArray(result)
+        ? result
+        : [];
+
     menuItems = apiItems.map(normalizeMenuItem);
 
-    if (!getCategories().includes(activeCategory)) {
-      activeCategory = "Todos";
-    }
+    activeCategory = "Todos";
 
     renderCategoryFilters();
     renderMenu();
+    renderPromoDay();
   } catch (error) {
     console.error("Erro ao carregar cardápio da API:", error);
 
-    menuItems = Array.isArray(config.menu) ? config.menu.map(normalizeMenuItem) : [];
-    activeCategory = "Todos";
-    renderCategoryFilters();
-    renderMenu();
+    menuItems = [];
+
+    if (categoryFilters) {
+      categoryFilters.innerHTML = "";
+    }
+
+    if (menuGrid) {
+      menuGrid.innerHTML = `
+        <div class="cart-empty-state">
+          <strong>Não foi possível carregar o cardápio.</strong>
+          <p>Verifique se o backend está ligado.</p>
+        </div>
+      `;
+    }
   }
 }
 
@@ -740,6 +838,151 @@ if (customerZipcodeInput) {
   });
 }
 
+function renderStars(rating) {
+  const value = Number(rating || 0);
+  return "⭐".repeat(value) + "☆".repeat(5 - value);
+}
+
+function formatReviewDate(value) {
+  if (!value) return "";
+
+  return new Date(value).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+}
+
+async function loadPublicReviews() {
+  if (!publicReviewsList) return;
+
+  try {
+    publicReviewsList.innerHTML = `<p class="reviews-empty">Carregando avaliações...</p>`;
+
+    const response = await fetch(`${API_BASE}/api/store/reviews`);
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result?.message || "Erro ao carregar avaliações.");
+    }
+
+    const reviews = Array.isArray(result.reviews) ? result.reviews : [];
+
+    const recentReviews = reviews
+      .slice()
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 6);
+
+    if (!recentReviews.length) {
+      publicReviewsList.innerHTML = `
+        <p class="reviews-empty">Ainda não temos avaliações públicas.</p>
+      `;
+      return;
+    }
+
+    publicReviewsList.innerHTML = recentReviews
+      .map(
+        (review) => `
+          <article class="public-review-card">
+            <div class="public-review-top">
+              <strong>Pedido ${review.orderId}</strong>
+              <span>${formatReviewDate(review.createdAt)}</span>
+            </div>
+
+            <p class="public-review-stars">${renderStars(review.rating)}</p>
+
+            ${
+              review.comment
+                ? `<p class="public-review-comment">“${review.comment}”</p>`
+                : `<p class="public-review-comment">Cliente avaliou sem comentário.</p>`
+            }
+          </article>
+        `
+      )
+      .join("");
+  } catch (error) {
+    console.error("Erro ao carregar avaliações públicas:", error);
+
+    publicReviewsList.innerHTML = `
+      <p class="reviews-empty">Não foi possível carregar as avaliações agora.</p>
+    `;
+  }
+}
+
+async function loadStoreStatus() {
+  try {
+    const response = await fetch(`${API_BASE}/api/store/status`);
+    const result = await response.json();
+
+    isStoreOpen = Boolean(result.isOpen);
+
+    if (!isStoreOpen) {
+      storeClosedOverlay.classList.remove("hidden");
+    } else {
+      storeClosedOverlay.classList.add("hidden");
+    }
+
+  } catch (error) {
+    console.error("Erro ao verificar status da loja:", error);
+  }
+}
+
+function renderPromoDay() {
+  if (!promoDayList) return;
+
+  const promoItems = menuItems.filter(
+    (item) => item.isPromotion && item.promotionalPrice
+  );
+
+  if (!promoItems.length) {
+    promoDayList.innerHTML = `
+      <p class="promo-empty">Nenhuma promoção disponível no momento.</p>
+    `;
+    return;
+  }
+
+  promoDayList.innerHTML = promoItems
+    .slice(0, 6)
+    .map(
+      (item) => `
+        <article class="promo-day-card">
+          <div class="promo-image-wrapper">
+            <img src="${item.image}" alt="${item.name}" />
+            <span class="promo-badge">🔥 ${item.promotionLabel || "Promoção"}</span>
+          </div>
+
+          <div class="promo-content">
+            <h3>${item.name}</h3>
+
+            <div class="promo-price-area">
+              <span class="old-price">${formatPrice(item.price)}</span>
+              <strong class="promo-price">${formatPrice(item.promotionalPrice)}</strong>
+            </div>
+
+            <button class="promo-btn" type="button" data-promo-add-to-cart="${item.id}">
+  Adicionar
+</button>
+          </div>
+        </article>
+      `
+    )
+    .join("");
+
+    promoDayList.querySelectorAll("[data-promo-add-to-cart]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const itemId = Number(button.getAttribute("data-promo-add-to-cart"));
+    const selectedItem = menuItems.find((item) => item.id === itemId);
+
+    if (selectedItem) {
+      addToCart(selectedItem);
+    }
+  });
+});
+}
+
 renderCart();
 updateCartCount();
 loadMenuFromApi();
+loadMenuFromApi();
+loadPublicReviews();
+loadStoreStatus();

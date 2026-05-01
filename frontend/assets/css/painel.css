@@ -656,3 +656,223 @@ button:active,
 .delete-btn:hover {
   box-shadow: 0 14px 24px rgba(217, 45, 32, 0.24) !important;
 }
+
+.promo-admin-line {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #fff5db;
+  color: #8a6116;
+  font-weight: 700;
+}
+
+/* =========================
+   UX UPGRADE - PAINEL / LOGIN / AVALIAR
+========================= */
+
+body {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(217, 79, 4, 0.12), transparent 28%),
+    radial-gradient(circle at 90% 10%, rgba(159, 52, 0, 0.08), transparent 25%),
+    linear-gradient(180deg, #fffaf5 0%, var(--bg) 100%);
+}
+
+.painel-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.painel-header::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -60px;
+  top: -80px;
+  background: radial-gradient(circle, rgba(217, 79, 4, 0.16), transparent 70%);
+  pointer-events: none;
+}
+
+.painel-header h1 {
+  letter-spacing: -0.03em;
+}
+
+.menu-form,
+.order-card,
+.menu-card,
+.review-card,
+.dashboard-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.order-card:hover,
+.menu-card:hover,
+.review-card:hover,
+.dashboard-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 38px rgba(31, 27, 22, 0.12);
+}
+
+.dashboard-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-card::after {
+  content: "";
+  position: absolute;
+  right: -30px;
+  bottom: -40px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(217, 79, 4, 0.12), transparent 70%);
+}
+
+.dashboard-card strong {
+  letter-spacing: -0.04em;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select,
+.order-filter-actions select,
+.order-actions select {
+  min-height: 50px;
+}
+
+.form-group input:hover,
+.form-group textarea:hover,
+.form-group select:hover,
+.order-filter-actions select:hover,
+.order-actions select:hover {
+  border-color: rgba(217, 79, 4, 0.35);
+}
+
+button,
+.primary-btn,
+.top-actions button,
+.section-header button,
+.form-actions button,
+.menu-actions button,
+.order-actions button {
+  min-height: 44px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.tabs {
+  position: sticky;
+  top: 12px;
+  z-index: 50;
+}
+
+.tab-btn {
+  min-height: 42px;
+}
+
+.badge {
+  box-shadow: 0 6px 14px rgba(31, 27, 22, 0.08);
+}
+
+.new-order-badge {
+  animation: badgePop 0.6s ease;
+}
+
+@keyframes badgePop {
+  0% {
+    transform: scale(0.86);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Login / Avaliação centralizada quando só tem formulário */
+body:has(#loginForm) .painel-container,
+body:has(#reviewForm) .painel-container {
+  max-width: 720px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+body:has(#loginForm) .painel-header,
+body:has(#reviewForm) .painel-header {
+  margin-bottom: 18px;
+}
+
+body:has(#loginForm) .menu-form,
+body:has(#reviewForm) .menu-form {
+  padding: 28px;
+}
+
+#loginForm input,
+#reviewForm input,
+#reviewForm select,
+#reviewForm textarea {
+  font-size: 1rem;
+}
+
+#loginForm button,
+#reviewForm button {
+  width: 100%;
+}
+
+/* Avaliação mais amigável */
+#reviewForm select {
+  appearance: none;
+  background:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%),
+    #fff;
+  background-position:
+    calc(100% - 22px) 22px,
+    calc(100% - 16px) 22px,
+    100% 0;
+  background-size:
+    6px 6px,
+    6px 6px,
+    2.5em 2.5em;
+  background-repeat: no-repeat;
+}
+
+.review-card {
+  border-left: 5px solid var(--accent);
+}
+
+.review-stars {
+  letter-spacing: 2px;
+}
+
+/* Cardápio painel: imagem mais elegante */
+.menu-card img {
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 18px rgba(31, 27, 22, 0.08);
+}
+
+/* Ações destrutivas */
+.delete-btn {
+  border-radius: 999px;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .tabs {
+    position: static;
+  }
+
+  body:has(#loginForm) .painel-container,
+  body:has(#reviewForm) .painel-container {
+    justify-content: flex-start;
+    padding-top: 24px;
+  }
+
+  .painel-header::after {
+    display: none;
+  }
+}

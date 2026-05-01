@@ -4,9 +4,11 @@ window.storeConfig = {
   logoText: "FF",
 
   theme: {
-    primaryColor: "#d94f04",
-    secondaryColor: "#9f3400"
-  },
+  primaryColor: "#d94f04",
+  secondaryColor: "#9f3400",
+  backgroundColor: "#f6f3ee",
+  textColor: "#1f1b16"
+},
 
   contact: {
     phone: "",

@@ -44,7 +44,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/orders", ordersRouter);
-app.use("/api/menu", requireAdmin, menuRouter);
+app.use("/api/menu", menuRouter);
 app.use("/api/store", storeRouter);
 app.use("/api/auth", authRouter);
 

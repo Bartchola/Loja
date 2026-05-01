@@ -1,0 +1,19 @@
+{
+  "isOpen": true,
+  "reviews": [
+    {
+      "id": 1777592153511,
+      "orderId": "123",
+      "rating": 5,
+      "comment": "fadasdasda",
+      "createdAt": "2026-04-30T23:35:53.511Z"
+    },
+    {
+      "id": 1777592307026,
+      "orderId": "PED-1777592262595",
+      "rating": 3,
+      "comment": "dsadasdasd",
+      "createdAt": "2026-04-30T23:38:27.026Z"
+    }
+  ]
+}

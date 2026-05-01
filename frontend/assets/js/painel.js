@@ -61,6 +61,9 @@ const itemId = document.getElementById("itemId");
 const itemName = document.getElementById("itemName");
 const itemCategory = document.getElementById("itemCategory");
 const itemPrice = document.getElementById("itemPrice");
+const itemIsPromotion = document.getElementById("itemIsPromotion");
+const itemPromotionalPrice = document.getElementById("itemPromotionalPrice");
+const itemPromotionLabel = document.getElementById("itemPromotionLabel");
 const itemImageFile = document.getElementById("itemImageFile");
 const currentImage = document.getElementById("currentImage");
 const currentImageLabel = document.getElementById("currentImageLabel");
@@ -273,6 +276,9 @@ function resetMenuForm() {
   currentImageLabel.textContent = "Nenhuma imagem selecionada.";
   itemActive.checked = true;
   itemAvailable.checked = true;
+  itemIsPromotion.checked = !!item.isPromotion;
+itemPromotionalPrice.value = item.promotionalPrice || "";
+itemPromotionLabel.value = item.promotionLabel || "";
 }
 
 function showMenuForm() {
@@ -324,6 +330,20 @@ function getFilteredOrders() {
   return allOrders.filter((order) => order.status === selectedStatus);
 }
 
+function formatPhone(phone) {
+  const digits = String(phone || "").replace(/\D/g, "");
+
+  if (digits.length === 11) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  }
+
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  return phone || "-";
+}
+
 function renderOrders(orders) {
   const filteredOrders = orders;
 
@@ -365,8 +385,23 @@ function renderOrders(orders) {
               }
 
               <p class="order-meta"><strong>Cliente:</strong> ${order.customer?.name || "-"}</p>
-              <p class="order-meta"><strong>Telefone:</strong> ${order.customer?.phone || "-"}</p>
-              <p class="order-meta"><strong>Endereço:</strong> ${order.address?.street || "-"}, ${order.address?.number || "-"} - ${order.address?.district || "-"}</p>
+              <p class="order-meta"><strong>Telefone:</strong> ${formatPhone(order.customer?.phone)}</p>
+              <p class="order-meta">
+  <strong>Endereço:</strong> 
+  ${order.address?.street || "-"}, ${order.address?.number || "-"} - ${order.address?.district || "-"}
+</p>
+
+${
+  order.address?.complement
+    ? `<p class="order-meta"><strong>Complemento:</strong> ${order.address.complement}</p>`
+    : ""
+}
+
+${
+  order.address?.reference
+    ? `<p class="order-meta"><strong>Referência:</strong> ${order.address.reference}</p>`
+    : ""
+}
               <p class="order-meta"><strong>Pagamento:</strong> ${order.payment?.method || "-"}</p>
 
               ${
@@ -491,7 +526,19 @@ async function loadMenu() {
               <div>
                 <h3>${item.name}</h3>
                 <p class="menu-meta"><strong>Categoria:</strong> ${item.category}</p>
-                <p class="menu-meta"><strong>Preço:</strong> ${formatCurrency(item.price)}</p>
+                <p class="menu-meta">
+  <strong>Preço:</strong> ${formatCurrency(item.price)}
+</p>
+
+${
+  item.isPromotion
+    ? `<p class="menu-meta promo-admin-line">
+        <strong>Promoção:</strong> 
+        ${item.promotionalPrice ? formatCurrency(item.promotionalPrice) : "Sem preço promocional"}
+        ${item.promotionLabel ? ` - ${item.promotionLabel}` : ""}
+      </p>`
+    : ""
+}
                 <p class="menu-meta"><strong>Descrição:</strong> ${item.description}</p>
                 <p class="menu-meta"><strong>Imagem:</strong> ${item.image || "Sem imagem"}</p>
                 ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}" style="width:120px;height:120px;object-fit:cover;border-radius:12px;margin-top:10px;">` : ""}
@@ -548,6 +595,9 @@ async function editMenuItem(id) {
     itemName.value = item.name || "";
     itemCategory.value = item.category || "";
     itemPrice.value = item.price || "";
+    itemIsPromotion.checked = !!item.isPromotion;
+itemPromotionalPrice.value = item.promotionalPrice || "";
+itemPromotionLabel.value = item.promotionLabel || "";
     itemDescription.value = item.description || "";
     itemActive.checked = !!item.active;
     itemAvailable.checked = !!item.available;
@@ -623,6 +673,9 @@ async function saveMenuItem(event) {
   formData.append("name", itemName.value.trim());
   formData.append("category", itemCategory.value.trim());
   formData.append("price", itemPrice.value);
+  formData.append("isPromotion", String(itemIsPromotion.checked));
+formData.append("promotionalPrice", itemPromotionalPrice.value || "");
+formData.append("promotionLabel", itemPromotionLabel.value.trim());
   formData.append("description", itemDescription.value.trim());
   formData.append("active", String(itemActive.checked));
   formData.append("available", String(itemAvailable.checked));

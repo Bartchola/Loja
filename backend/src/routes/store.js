@@ -64,47 +64,57 @@ router.get("/reviews", (req, res) => {
 });
 
 router.post("/reviews", (req, res) => {
-  const store = readStore();
+  try {
+    const store = readStore();
 
-  const { orderId, rating, comment } = req.body;
+    const { orderId, rating, comment } = req.body;
 
-  const numericRating = Number(rating);
+    const numericRating = Number(rating);
 
-  if (!orderId || Number.isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
-    return res.status(400).json({
+    if (!orderId || Number.isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
+      return res.status(400).json({
+        ok: false,
+        message: "Avaliação inválida."
+      });
+    }
+
+    store.reviews = Array.isArray(store.reviews) ? store.reviews : [];
+
+    const alreadyReviewed = store.reviews.some(
+      (review) => String(review.orderId) === String(orderId)
+    );
+
+    if (alreadyReviewed) {
+      return res.status(400).json({
+        ok: false,
+        message: "Esse pedido já foi avaliado."
+      });
+    }
+
+    const review = {
+      id: Date.now(),
+      orderId: String(orderId),
+      rating: numericRating,
+      comment: String(comment || "").trim(),
+      createdAt: new Date().toISOString()
+    };
+
+    store.reviews.push(review);
+    writeStore(store);
+
+    return res.status(201).json({
+      ok: true,
+      message: "Avaliação enviada com sucesso.",
+      review
+    });
+  } catch (error) {
+    console.error("Erro ao salvar avaliação:", error);
+
+    return res.status(500).json({
       ok: false,
-      message: "Avaliação inválida."
+      message: "Erro ao salvar avaliação."
     });
   }
-
-  store.reviews = Array.isArray(store.reviews) ? store.reviews : [];
-
-  const alreadyReviewed = store.reviews.some(
-    (review) => String(review.orderId) === String(orderId)
-  );
-
-  if (alreadyReviewed) {
-    return res.status(400).json({
-      ok: false,
-      message: "Esse pedido já foi avaliado."
-    });
-  }
-
-  const review = {
-    id: Date.now(),
-    orderId: String(orderId),
-    rating: numericRating,
-    comment: String(comment || "").trim(),
-    createdAt: new Date().toISOString()
-  };
-
-  store.reviews.push(review);
-  writeStore(store);
-
-  return res.status(201).json({
-    ok: true,
-    review
-  });
 });
 
 export default router;

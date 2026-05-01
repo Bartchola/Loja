@@ -12,6 +12,12 @@
   <link rel="stylesheet" href="../assets/css/global.css">
 </head>
 <body>
+  <div id="storeClosedOverlay" class="store-closed-overlay hidden">
+  <div class="store-closed-box">
+    <h2>🚫 Estamos fechados no momento</h2>
+    <p>Voltaremos em breve. Agradecemos sua compreensão.</p>
+  </div>
+</div>
   <header class="site-header">
     <div class="container header-shell">
       <a class="brand" href="#inicio" aria-label="Ir para o início">
@@ -63,6 +69,18 @@
       </div>
     </section>
 
+    <section class="promo-day-section" id="promocoes">
+  <div class="section-header-public">
+    <span class="eyebrow">🔥 Promoções</span>
+    <h2>Promoções do dia</h2>
+    <p>Aproveite as melhores ofertas de hoje</p>
+  </div>
+
+  <div id="promoDayList" class="promo-day-list">
+    <p class="promo-empty">Carregando promoções...</p>
+  </div>
+</section>
+
     <section class="menu-section" id="cardapio">
       <div class="container">
         <div class="section-heading">
@@ -79,6 +97,18 @@
         <div class="menu-grid" data-menu-grid></div>
       </div>
     </section>
+
+    <section class="reviews-section" id="avaliacoes">
+  <div class="section-header-public">
+    <span class="eyebrow">Avaliações</span>
+    <h2>O que nossos clientes dizem</h2>
+    <p>As avaliações mais recentes aparecem primeiro para manter transparência.</p>
+  </div>
+
+  <div id="publicReviewsList" class="public-reviews-list">
+    <p class="reviews-empty">Carregando avaliações...</p>
+  </div>
+</section>
 
     <section class="placeholder-section" id="sobre">
       <div class="container">
@@ -169,8 +199,8 @@
 
       <div class="checkout-grid">
         <div class="checkout-field">
-          <label for="customerZipcode">CEP</label>
-          <input id="customerZipcode" name="customerZipcode" type="text" placeholder="00000-000" maxlength="9" inputmode="numeric" required>
+          <label for="customerZipcode">CEP <span class="optional-label">(opcional)</span></label>
+          <input type="text" id="customerZipcode" name="customerZipcode" placeholder="Opcional - 00000-000">
         </div>
 
         <div class="checkout-field">

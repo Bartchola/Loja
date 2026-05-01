@@ -71,11 +71,18 @@ router.get("/", (req, res) => {
   const isAdmin = req.query.admin === "true";
 
   if (isAdmin) {
-    return res.json({ ok: true, items: menu });
+    return res.json({
+      ok: true,
+      items: menu
+    });
   }
 
   const publicItems = menu.filter((item) => item.active && item.available);
-  return res.json({ ok: true, items: publicItems });
+
+  return res.json({
+    ok: true,
+    items: publicItems
+  });
 });
 
 router.get("/:id", (req, res) => {
@@ -113,7 +120,10 @@ router.post("/", upload.single("imageFile"), (req, res) => {
       price,
       image: req.file ? req.file.filename : "",
       active: parseBoolean(req.body.active, true),
-      available: parseBoolean(req.body.available, true)
+      available: parseBoolean(req.body.available, true),
+      isPromotion: parseBoolean(req.body.isPromotion, false),
+      promotionalPrice: req.body.promotionalPrice ? Number(req.body.promotionalPrice) : null,
+      promotionLabel: String(req.body.promotionLabel || "").trim()
     };
 
     menu.push(newItem);
@@ -162,7 +172,10 @@ router.put("/:id", upload.single("imageFile"), (req, res) => {
         ? req.file.filename
         : String(req.body.currentImage || currentItem.image || "").trim(),
       active: parseBoolean(req.body.active, currentItem.active),
-      available: parseBoolean(req.body.available, currentItem.available)
+      available: parseBoolean(req.body.available, currentItem.available),
+      isPromotion: parseBoolean(req.body.isPromotion, currentItem.isPromotion || false),
+promotionalPrice: req.body.promotionalPrice ? Number(req.body.promotionalPrice) : null,
+promotionLabel: String(req.body.promotionLabel || "").trim()
     };
 
     menu[index] = updatedItem;
