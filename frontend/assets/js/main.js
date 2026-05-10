@@ -31,6 +31,7 @@ const checkoutCloseButtons = document.querySelectorAll("[data-checkout-close]");
 const checkoutBackButton = document.querySelector("[data-checkout-back]");
 const checkoutForm = document.querySelector("[data-checkout-form]");
 const customerZipcodeInput = document.querySelector("#customerZipcode");
+const customerPhoneInput = document.querySelector("#customerPhone");
 const customerStreetInput = document.querySelector("#customerStreet");
 const customerDistrictInput = document.querySelector("#customerDistrict");
 const customerCityInput = document.querySelector("#customerCity");
@@ -261,7 +262,7 @@ function formatZipcode(value) {
 }
 
 async function fetchAddressByCep(cep) {
-  const cleanCep = cep.replace(/\D/g, "");
+  const cleanCep = String(cep || "").replace(/\D/g, "");
 
   if (!cleanCep) {
     return;
@@ -276,28 +277,27 @@ async function fetchAddressByCep(cep) {
     const data = await response.json();
 
     if (data.erro) {
-      alert("CEP não encontrado.");
+      alert("CEP não encontrado. Você pode preencher o endereço manualmente.");
       return;
     }
 
     if (customerStreetInput) {
-      customerStreetInput.value = data.logradouro || "";
+      customerStreetInput.value = data.logradouro || customerStreetInput.value;
     }
 
     if (customerDistrictInput) {
-      customerDistrictInput.value = data.bairro || "";
+      customerDistrictInput.value = data.bairro || customerDistrictInput.value;
     }
 
     if (customerCityInput) {
-      customerCityInput.value = data.localidade || "";
+      customerCityInput.value = data.localidade || customerCityInput.value;
     }
 
     if (customerStateInput) {
-      customerStateInput.value = data.uf || "";
+      customerStateInput.value = data.uf || customerStateInput.value;
     }
   } catch (error) {
     console.error("Erro ao buscar CEP:", error);
-    alert("Não foi possível buscar o CEP.");
   }
 }
 
@@ -368,14 +368,14 @@ if (!storeOpen) {
       phone: checkoutData.phone
     },
     address: {
-  street: addressData.logradouro || streetInput.value,
-  number: numberInput.value,
-  district: addressData.bairro || districtInput.value,
-  city: addressData.localidade || "",
-  state: addressData.uf || "",
-  cep: cepValue || "",
-  complement: complementInput.value,
-  reference: referenceInput.value
+  zipcode: checkoutData.zipcode,
+  city: checkoutData.city,
+  state: checkoutData.state,
+  street: checkoutData.street,
+  number: checkoutData.number,
+  district: checkoutData.district,
+  complement: checkoutData.complement,
+  reference: checkoutData.reference
 },
     payment: {
       method: checkoutData.paymentMethod,
@@ -834,7 +834,9 @@ if (customerZipcodeInput) {
   });
 
   customerZipcodeInput.addEventListener("blur", () => {
-    fetchAddressByCep(customerZipcodeInput.value);
+    if (customerZipcodeInput.value.trim()) {
+      fetchAddressByCep(customerZipcodeInput.value);
+    }
   });
 }
 
@@ -885,7 +887,9 @@ async function loadPublicReviews() {
         (review) => `
           <article class="public-review-card">
             <div class="public-review-top">
-              <strong>Pedido ${review.orderId}</strong>
+              <strong>
+  ${review.customerName ? `Pedido de ${review.customerName}` : `Pedido ${review.orderId}`}
+</strong>
               <span>${formatReviewDate(review.createdAt)}</span>
             </div>
 
@@ -978,6 +982,30 @@ function renderPromoDay() {
     }
   });
 });
+}
+
+function formatPhoneInput(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
+
+  if (digits.length <= 2) {
+    return digits;
+  }
+
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+if (customerPhoneInput) {
+  customerPhoneInput.addEventListener("input", () => {
+    customerPhoneInput.value = formatPhoneInput(customerPhoneInput.value);
+  });
 }
 
 renderCart();

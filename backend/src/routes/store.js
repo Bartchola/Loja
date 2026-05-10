@@ -92,12 +92,13 @@ router.post("/reviews", (req, res) => {
     }
 
     const review = {
-      id: Date.now(),
-      orderId: String(orderId),
-      rating: numericRating,
-      comment: String(comment || "").trim(),
-      createdAt: new Date().toISOString()
-    };
+  id: Date.now(),
+  orderId: String(orderId),
+  customerName: String(req.body.customerName || "Cliente").trim(),
+  rating: numericRating,
+  comment: String(comment || "").trim(),
+  createdAt: new Date().toISOString()
+};
 
     store.reviews.push(review);
     writeStore(store);

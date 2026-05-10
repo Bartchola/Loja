@@ -4,6 +4,7 @@ const reviewForm = document.getElementById("reviewForm");
 const orderIdInput = document.getElementById("orderId");
 const ratingInput = document.getElementById("rating");
 const commentInput = document.getElementById("comment");
+const customerNameInput = document.getElementById("customerName");
 
 const params = new URLSearchParams(window.location.search);
 const orderId = params.get("orderId");
@@ -33,6 +34,7 @@ if (reviewForm) {
         },
         body: JSON.stringify({
           orderId: orderIdInput.value,
+          customerName: customerNameInput?.value?.trim() || "Cliente",
           rating: ratingInput.value,
           comment: commentInput.value.trim()
         })

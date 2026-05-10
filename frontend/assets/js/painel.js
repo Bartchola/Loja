@@ -371,7 +371,8 @@ function renderOrders(orders) {
           <div class="order-top">
             <div>
               <h3>
-                Pedido ${order.id}
+                Pedido de ${order.customer?.name || "Cliente"}
+                <small>#${order.id}</small>
                 ${isNewOrder ? `<span class="new-order-badge">NOVO PEDIDO 🔥</span>` : ""}
               </h3>
 
@@ -390,6 +391,12 @@ function renderOrders(orders) {
   <strong>Endereço:</strong> 
   ${order.address?.street || "-"}, ${order.address?.number || "-"} - ${order.address?.district || "-"}
 </p>
+
+${
+  order.address?.city || order.address?.state
+    ? `<p class="order-meta"><strong>Cidade:</strong> ${order.address?.city || "-"}${order.address?.state ? `/${order.address.state}` : ""}</p>`
+    : ""
+}
 
 ${
   order.address?.complement
@@ -855,7 +862,13 @@ async function loadReviews() {
         (review) => `
           <div class="review-card">
             <div>
-              <h3>Pedido ${review.orderId}</h3>
+              <h3>
+  ${
+  review.customerName
+    ? `Pedido de ${review.customerName}`
+    : `Pedido ${review.orderId}`
+}
+</h3>
               <p class="review-stars">${renderStars(review.rating)}</p>
               <p class="review-comment">${review.comment || "Sem comentário."}</p>
               <p class="order-meta"><strong>Data:</strong> ${formatDate(review.createdAt)}</p>
