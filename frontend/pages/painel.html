@@ -22,10 +22,38 @@
       </div>
     </header>
 
+    <div class="store-schedule-card">
+  <div>
+    <h3>Horário automático</h3>
+    <p>Configure para a loja abrir e fechar sozinha.</p>
+  </div>
+
+  <div class="schedule-grid">
+    <label>
+      Abre às
+      <input type="time" id="openTimeInput" />
+    </label>
+
+    <label>
+      Fecha às
+      <input type="time" id="closeTimeInput" />
+    </label>
+
+    <button id="toggleScheduleBtn" type="button">
+      Ativar automação
+    </button>
+
+    <button id="saveScheduleBtn" type="button">
+      Salvar horário
+    </button>
+  </div>
+</div>
+
     <nav class="tabs">
       <button class="tab-btn active" data-tab="pedidos">Pedidos</button>
       <button class="tab-btn" data-tab="cardapio">Cardápio</button>
       <button class="tab-btn" data-tab="avaliacoes">Avaliações</button>
+      <button class="tab-btn" data-tab="contato">Contato</button>
     </nav>
 
     <main class="tab-content">
@@ -83,6 +111,19 @@
           </div>
         </div>
 
+        <div id="menuModalOverlay" class="menu-modal-overlay hidden">
+        <div class="menu-modal">
+          <div class="menu-modal-header">
+            <div>
+              <h2 id="menuModalTitle">Novo item</h2>
+              <p>Cadastre ou edite um item do cardápio.</p>
+            </div>
+
+            <button id="closeMenuModalBtn" type="button" class="menu-modal-close">
+              ×
+            </button>
+          </div>
+
         <form id="menuForm" class="menu-form hidden">
           <input type="hidden" id="itemId" />
           <input type="hidden" id="currentImage" />
@@ -104,21 +145,21 @@
             </div>
 
             <div class="form-group checkbox-group">
-  <label>
-    <input type="checkbox" id="itemIsPromotion" />
-    Item em promoção
-  </label>
-</div>
+              <label>
+                <input type="checkbox" id="itemIsPromotion" />
+                Item em promoção
+              </label>
+            </div>
 
-<div class="form-group">
-  <label for="itemPromotionalPrice">Preço promocional</label>
-  <input type="number" id="itemPromotionalPrice" step="0.01" min="0" placeholder="Ex: 19.90" />
-</div>
+            <div class="form-group">
+              <label for="itemPromotionalPrice">Preço promocional</label>
+              <input type="number" id="itemPromotionalPrice" step="0.01" min="0" placeholder="Ex: 19.90" />
+            </div>
 
-<div class="form-group">
-  <label for="itemPromotionLabel">Texto da promoção</label>
-  <input type="text" id="itemPromotionLabel" placeholder="Ex: Promoção do dia" />
-</div>
+            <div class="form-group">
+              <label for="itemPromotionLabel">Texto da promoção</label>
+              <input type="text" id="itemPromotionLabel" placeholder="Ex: Promoção do dia" />
+            </div>
 
             <div class="form-group">
               <label for="itemImageFile">Imagem do item</label>
@@ -151,6 +192,17 @@
             <button type="button" id="cancelFormBtn">Cancelar</button>
           </div>
         </form>
+      </div>
+        </div>
+
+        <div class="panel-search-wrapper">
+  <input
+    type="search"
+    id="panelMenuSearchInput"
+    class="panel-search-input"
+    placeholder="Buscar item do cardápio..."
+  />
+</div>
 
         <div id="menuList" class="menu-list">
           <p class="empty-message">Carregando itens do cardápio...</p>
@@ -177,6 +229,44 @@
   <div id="reviewsList" class="reviews-list">
     <p class="empty-message">Carregando avaliações...</p>
   </div>
+</section>
+
+<section id="tab-contato" class="tab-panel">
+  <div class="section-header">
+    <h2>Contato da Loja</h2>
+    <button id="saveContactBtn" type="button">Salvar contato</button>
+  </div>
+
+  <form class="menu-form">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="storePhoneInput">WhatsApp</label>
+        <input type="text" id="storePhoneInput" placeholder="(51) 99999-9999" />
+      </div>
+
+      <div class="form-group">
+        <label for="storeEmailInput">E-mail</label>
+        <input type="email" id="storeEmailInput" placeholder="contato@seudominio.com" />
+      </div>
+
+      <div class="form-group full-width">
+        <label for="storeAddressInput">Endereço</label>
+        <input type="text" id="storeAddressInput" placeholder="Rua Exemplo, 123 - Centro" />
+      </div>
+
+      <div class="form-group full-width">
+        <label for="storeHoursInput">Horário exibido no site</label>
+        <input
+          type="text"
+          id="storeHoursInput"
+          placeholder="Ex: Todos os dias das 18h às 23h"
+        />
+        <small id="storeHoursHelp">
+          Se a automação estiver ativada, o site usará o horário automático.
+        </small>
+      </div>
+    </div>
+  </form>
 </section>
     </main>
   </div>

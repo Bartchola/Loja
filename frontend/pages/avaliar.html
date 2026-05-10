@@ -6,8 +6,8 @@
   <title>Avaliar Pedido</title>
   <link rel="stylesheet" href="/assets/css/painel.css" />
 </head>
-<body>
-  <div class="painel-container">
+<body class="review-page">
+  <div class="painel-container review-container">
     <header class="painel-header">
       <div>
         <h1>Avalie seu pedido</h1>
@@ -15,13 +15,13 @@
       </div>
     </header>
 
-    <form id="reviewForm" class="menu-form">
+    <form id="reviewForm" class="menu-form review-form">
       <input type="hidden" id="orderId" />
 
       <div class="form-grid">
         <div class="form-group full-width">
-          <label for="customerName">Nome</label>
-          <input type="text" id="customerName" placeholder="Seu nome" />
+          <label for="customerName">Seu nome</label>
+          <input type="text" id="customerName" placeholder="Ex: Miguel" required />
         </div>
 
         <div class="form-group full-width">
@@ -42,12 +42,12 @@
         </div>
       </div>
 
-      <div class="form-actions">
+      <div class="form-actions review-actions">
         <button type="submit" class="primary-btn">Enviar avaliação</button>
       </div>
     </form>
   </div>
 
-  <script src="../assets/js/avaliar.js"></script>
+  <script src="/assets/js/avaliar.js"></script>
 </body>
 </html>

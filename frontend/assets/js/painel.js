@@ -35,12 +35,15 @@ checkAdminAuth();
 
 const ordersList = document.getElementById("ordersList");
 const menuList = document.getElementById("menuList");
+const panelMenuSearchInput = document.getElementById("panelMenuSearchInput");
+let panelMenuSearchTerm = "";
+let allMenuItems = [];
 
 const refreshOrdersBtn = document.getElementById("refreshOrdersBtn");
 const refreshMenuBtn = document.getElementById("refreshMenuBtn");
+const newItemBtn = document.getElementById("newItemBtn");
 const refreshAllBtn = document.getElementById("refreshAllBtn");
 const enableSoundBtn = document.getElementById("enableSoundBtn");
-const newItemBtn = document.getElementById("newItemBtn");
 const toggleStoreBtn = document.getElementById("toggleStoreBtn");
 const orderStatusFilter = document.getElementById("orderStatusFilter");
 const refreshReviewsBtn = document.getElementById("refreshReviewsBtn");
@@ -55,6 +58,9 @@ const reviewsTotal = document.getElementById("reviewsTotal");
 const reviewsAverage = document.getElementById("reviewsAverage");
 
 const menuForm = document.getElementById("menuForm");
+const menuModalOverlay = document.getElementById("menuModalOverlay");
+const closeMenuModalBtn = document.getElementById("closeMenuModalBtn");
+const menuModalTitle = document.getElementById("menuModalTitle");
 const cancelFormBtn = document.getElementById("cancelFormBtn");
 
 const itemId = document.getElementById("itemId");
@@ -74,6 +80,20 @@ const itemAvailable = document.getElementById("itemAvailable");
 const tabButtons = document.querySelectorAll(".tab-btn");
 const tabPanels = document.querySelectorAll(".tab-panel");
 const logoutBtn = document.getElementById("logoutBtn");
+
+const openTimeInput = document.getElementById("openTimeInput");
+const closeTimeInput = document.getElementById("closeTimeInput");
+const toggleScheduleBtn = document.getElementById("toggleScheduleBtn");
+const saveScheduleBtn = document.getElementById("saveScheduleBtn");
+
+const saveContactBtn = document.getElementById("saveContactBtn");
+const storePhoneInput = document.getElementById("storePhoneInput");
+const storeEmailInput = document.getElementById("storeEmailInput");
+const storeAddressInput = document.getElementById("storeAddressInput");
+const storeHoursInput = document.getElementById("storeHoursInput");
+const storeHoursHelp = document.getElementById("storeHoursHelp");
+
+let autoScheduleEnabled = false;
 
 const orderStatuses = [
   "Recebido",
@@ -98,6 +118,73 @@ let newOrderIds = new Set(savedNewOrderIds);
 function saveOrderNotificationState() {
   localStorage.setItem("knownOrderIds", JSON.stringify([...knownOrderIds]));
   localStorage.setItem("newOrderIds", JSON.stringify([...newOrderIds]));
+}
+
+async function loadStoreContact() {
+  try {
+    const response = await fetch(`${API_BASE}/api/store/contact`);
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result?.message || "Erro ao carregar contato.");
+    }
+
+    const contact = result.contact || {};
+
+    if (storePhoneInput) storePhoneInput.value = contact.phone || "";
+    if (storeEmailInput) storeEmailInput.value = contact.email || "";
+    if (storeAddressInput) storeAddressInput.value = contact.address || "";
+    if (storeHoursInput) storeHoursInput.value = contact.displayHours || "";
+
+    if (storeHoursInput && contact.autoScheduleEnabled) {
+      storeHoursInput.disabled = true;
+    } else if (storeHoursInput) {
+      storeHoursInput.disabled = false;
+    }
+
+    if (storeHoursHelp) {
+      storeHoursHelp.textContent = contact.autoScheduleEnabled
+        ? "Automação ativa: o horário exibido vem da programação automática."
+        : "Automação desligada: este texto será exibido no site.";
+    }
+  } catch (error) {
+    console.error("Erro ao carregar contato:", error);
+  }
+}
+
+async function saveStoreContact() {
+  try {
+    const payload = {
+      phone: storePhoneInput?.value || "",
+      email: storeEmailInput?.value || "",
+      address: storeAddressInput?.value || "",
+      displayHours: storeHoursInput?.value || ""
+    };
+
+    const response = await fetch(`${API_BASE}/api/store/contact`, {
+      method: "PATCH",
+      headers: getAuthHeaders({
+        "Content-Type": "application/json"
+      }),
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result?.message || "Erro ao salvar contato.");
+    }
+
+    if (storePhoneInput) storePhoneInput.value = result.contact?.phone || "";
+    if (storeEmailInput) storeEmailInput.value = result.contact?.email || "";
+    if (storeAddressInput) storeAddressInput.value = result.contact?.address || "";
+    if (storeHoursInput) storeHoursInput.value = result.contact?.displayHours || "";
+
+    alert("Contato atualizado com sucesso!");
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "Erro ao salvar contato.");
+  }
 }
 
 async function enableSoundNotifications() {
@@ -276,17 +363,36 @@ function resetMenuForm() {
   currentImageLabel.textContent = "Nenhuma imagem selecionada.";
   itemActive.checked = true;
   itemAvailable.checked = true;
-  itemIsPromotion.checked = !!item.isPromotion;
-itemPromotionalPrice.value = item.promotionalPrice || "";
-itemPromotionLabel.value = item.promotionLabel || "";
+
+  itemIsPromotion.checked = false;
+  itemPromotionalPrice.value = "";
+  itemPromotionLabel.value = "";
 }
 
-function showMenuForm() {
+function showMenuForm(mode = "create") {
+  if (!menuForm || !menuModalOverlay) {
+    console.error("menuForm ou menuModalOverlay não encontrado.");
+    return;
+  }
+
+  if (menuModalTitle) {
+    menuModalTitle.textContent = mode === "edit" ? "Editar item" : "Novo item";
+  }
+
+  menuModalOverlay.classList.remove("hidden");
   menuForm.classList.remove("hidden");
+
+  document.body.classList.add("modal-open");
 }
 
 function hideMenuForm() {
+  if (!menuForm || !menuModalOverlay) return;
+
+  menuModalOverlay.classList.add("hidden");
   menuForm.classList.add("hidden");
+
+  document.body.classList.remove("modal-open");
+
   resetMenuForm();
 }
 
@@ -503,6 +609,84 @@ async function updateOrderStatus(orderId, status) {
   }
 }
 
+function renderPanelMenu() {
+  const search = panelMenuSearchTerm.toLowerCase().trim();
+
+  const filteredItems = allMenuItems.filter((item) => {
+    return (
+      !search ||
+      item.name?.toLowerCase().includes(search) ||
+      item.category?.toLowerCase().includes(search) ||
+      item.description?.toLowerCase().includes(search)
+    );
+  });
+
+  if (!filteredItems.length) {
+    menuList.innerHTML = `<p class="empty-message">Nenhum item encontrado.</p>`;
+    return;
+  }
+
+  menuList.innerHTML = filteredItems
+    .map((item) => {
+      const imageUrl = resolveImagePath(item.image);
+
+      return `
+        <div class="menu-card">
+          <div class="menu-top">
+            <div>
+              <h3>${item.name}</h3>
+              <p class="menu-meta"><strong>Categoria:</strong> ${item.category}</p>
+              <p class="menu-meta"><strong>Preço:</strong> ${formatCurrency(item.price)}</p>
+
+              ${
+                item.isPromotion
+                  ? `<p class="menu-meta promo-admin-line">
+                      <strong>Promoção:</strong> 
+                      ${item.promotionalPrice ? formatCurrency(item.promotionalPrice) : "Sem preço promocional"}
+                      ${item.promotionLabel ? ` - ${item.promotionLabel}` : ""}
+                    </p>`
+                  : ""
+              }
+
+              <p class="menu-meta"><strong>Descrição:</strong> ${item.description}</p>
+              <p class="menu-meta"><strong>Imagem:</strong> ${item.image || "Sem imagem"}</p>
+
+              ${
+                imageUrl
+                  ? `<img src="${imageUrl}" alt="${item.name}" style="width:120px;height:120px;object-fit:cover;border-radius:12px;margin-top:10px;">`
+                  : ""
+              }
+            </div>
+
+            <div>
+              <span class="badge ${item.active ? "active" : "inactive"}">
+                ${item.active ? "Ativo" : "Inativo"}
+              </span>
+              <br /><br />
+              <span class="badge ${item.available ? "available" : "unavailable"}">
+                ${item.available ? "Disponível" : "Indisponível"}
+              </span>
+            </div>
+          </div>
+
+          <div class="menu-actions">
+            <button onclick="editMenuItem(${item.id})">Editar</button>
+            <button onclick="toggleItemActive(${item.id})">
+              ${item.active ? "Desativar" : "Ativar"}
+            </button>
+            <button onclick="toggleItemAvailable(${item.id})">
+              ${item.available ? "Marcar indisponível" : "Marcar disponível"}
+            </button>
+            <button class="delete-btn" onclick="deleteMenuItem(${item.id})">
+              Excluir
+            </button>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
 async function loadMenu() {
   try {
     menuList.innerHTML = `<p class="empty-message">Carregando itens do cardápio...</p>`;
@@ -510,6 +694,7 @@ async function loadMenu() {
     const response = await fetch(`${API_BASE}/api/menu?admin=true`, {
       headers: getAuthHeaders()
     });
+
     const result = await response.json();
 
     if (!response.ok) {
@@ -518,67 +703,8 @@ async function loadMenu() {
 
     const items = Array.isArray(result.items) ? result.items : [];
 
-    if (!items.length) {
-      menuList.innerHTML = `<p class="empty-message">Nenhum item cadastrado no cardápio.</p>`;
-      return;
-    }
-
-    menuList.innerHTML = items
-      .map((item) => {
-        const imageUrl = resolveImagePath(item.image);
-
-        return `
-          <div class="menu-card">
-            <div class="menu-top">
-              <div>
-                <h3>${item.name}</h3>
-                <p class="menu-meta"><strong>Categoria:</strong> ${item.category}</p>
-                <p class="menu-meta">
-  <strong>Preço:</strong> ${formatCurrency(item.price)}
-</p>
-
-${
-  item.isPromotion
-    ? `<p class="menu-meta promo-admin-line">
-        <strong>Promoção:</strong> 
-        ${item.promotionalPrice ? formatCurrency(item.promotionalPrice) : "Sem preço promocional"}
-        ${item.promotionLabel ? ` - ${item.promotionLabel}` : ""}
-      </p>`
-    : ""
-}
-                <p class="menu-meta"><strong>Descrição:</strong> ${item.description}</p>
-                <p class="menu-meta"><strong>Imagem:</strong> ${item.image || "Sem imagem"}</p>
-                ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}" style="width:120px;height:120px;object-fit:cover;border-radius:12px;margin-top:10px;">` : ""}
-              </div>
-
-              <div>
-                <span class="badge ${item.active ? "active" : "inactive"}">
-                  ${item.active ? "Ativo" : "Inativo"}
-                </span>
-                <br /><br />
-                <span class="badge ${item.available ? "available" : "unavailable"}">
-                  ${item.available ? "Disponível" : "Indisponível"}
-                </span>
-              </div>
-            </div>
-
-            <div class="menu-actions">
-              <button onclick="editMenuItem(${item.id})">Editar</button>
-              <button onclick="toggleItemActive(${item.id})">
-                ${item.active ? "Desativar" : "Ativar"}
-              </button>
-              <button onclick="toggleItemAvailable(${item.id})">
-                ${item.available ? "Marcar indisponível" : "Marcar disponível"}
-              </button>
-
-              <button class="delete-btn" onclick="deleteMenuItem(${item.id})">
-  Excluir
-</button>
-            </div>
-          </div>
-        `;
-      })
-      .join("");
+    allMenuItems = items;
+    renderPanelMenu();
   } catch (error) {
     console.error("Erro ao carregar cardápio:", error);
     menuList.innerHTML = `<p class="empty-message">Erro ao carregar cardápio.</p>`;
@@ -614,9 +740,8 @@ itemPromotionLabel.value = item.promotionLabel || "";
       ? `Imagem atual: ${item.image}`
       : "Nenhuma imagem selecionada.";
 
-    showMenuForm();
+    showMenuForm("edit");
     document.querySelector('[data-tab="cardapio"]').click();
-    window.scrollTo({ top: 0, behavior: "smooth" });
   } catch (error) {
     console.error(error);
     alert(error.message || "Erro ao carregar item para edição.");
@@ -721,10 +846,12 @@ formData.append("promotionLabel", itemPromotionLabel.value.trim());
   }
 }
 
-newItemBtn.addEventListener("click", () => {
-  resetMenuForm();
-  showMenuForm();
-});
+if (newItemBtn) {
+  newItemBtn.addEventListener("click", () => {
+    resetMenuForm();
+    showMenuForm("create");
+  });
+}
 
 cancelFormBtn.addEventListener("click", hideMenuForm);
 
@@ -762,11 +889,27 @@ if (logoutBtn) {
   });
 }
 
+if (closeMenuModalBtn) {
+  closeMenuModalBtn.addEventListener("click", hideMenuForm);
+}
+
+if (menuModalOverlay) {
+  menuModalOverlay.addEventListener("click", (event) => {
+    if (event.target === menuModalOverlay) {
+      hideMenuForm();
+    }
+  });
+}
+
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && menuModalOverlay && !menuModalOverlay.classList.contains("hidden")) {
+    hideMenuForm();
+  }
+});
+
 async function loadStoreStatus() {
   try {
-    const response = await fetch(`${API_BASE}/api/store/status`, {
-      headers: getAuthHeaders()
-    });
+    const response = await fetch(`${API_BASE}/api/store/status`);
     const result = await response.json();
 
     if (!response.ok) {
@@ -774,7 +917,18 @@ async function loadStoreStatus() {
     }
 
     storeIsOpen = Boolean(result.isOpen);
+    autoScheduleEnabled = Boolean(result.autoScheduleEnabled);
+
+    if (openTimeInput) {
+      openTimeInput.value = result.schedule?.openTime || "18:00";
+    }
+
+    if (closeTimeInput) {
+      closeTimeInput.value = result.schedule?.closeTime || "23:30";
+    }
+
     updateStoreButton();
+    updateScheduleButton();
   } catch (error) {
     console.error("Erro ao carregar status da loja:", error);
 
@@ -790,6 +944,83 @@ function updateStoreButton() {
   toggleStoreBtn.textContent = storeIsOpen ? "Loja aberta" : "Loja fechada";
   toggleStoreBtn.classList.toggle("store-open", storeIsOpen);
   toggleStoreBtn.classList.toggle("store-closed", !storeIsOpen);
+}
+
+function updateScheduleButton() {
+  if (!toggleScheduleBtn) return;
+
+  toggleScheduleBtn.textContent = autoScheduleEnabled
+    ? "Desativar automação"
+    : "Ativar automação";
+
+  toggleScheduleBtn.classList.toggle("store-open", autoScheduleEnabled);
+  toggleScheduleBtn.classList.toggle("store-closed", !autoScheduleEnabled);
+}
+
+async function saveStoreSchedule() {
+  try {
+    const response = await fetch(`${API_BASE}/api/store/schedule`, {
+      method: "PATCH",
+      headers: getAuthHeaders({
+        "Content-Type": "application/json"
+      }),
+      body: JSON.stringify({
+        autoScheduleEnabled,
+        openTime: openTimeInput?.value || "18:00",
+        closeTime: closeTimeInput?.value || "23:30"
+      })
+    });
+
+    const text = await response.text();
+
+let result;
+
+try {
+  result = JSON.parse(text);
+} catch {
+  throw new Error("A rota /api/store/schedule não respondeu JSON. Confira se o backend foi reiniciado e se a rota existe.");
+}
+
+    if (!response.ok) {
+      throw new Error(result?.message || "Erro ao salvar horário.");
+    }
+
+    storeIsOpen = Boolean(result.isOpen);
+    autoScheduleEnabled = Boolean(result.autoScheduleEnabled);
+
+    updateStoreButton();
+    updateScheduleButton();
+
+    await loadStoreContact();
+
+    alert("Horário salvo com sucesso!");
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "Erro ao salvar horário.");
+  }
+}
+
+async function toggleScheduleAutomation() {
+  autoScheduleEnabled = !autoScheduleEnabled;
+  await saveStoreSchedule();
+}
+
+function formatPhoneInput(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
+
+  if (digits.length <= 2) {
+    return digits;
+  }
+
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
 async function toggleStoreStatus() {
@@ -883,6 +1114,12 @@ async function loadReviews() {
   }
 }
 
+if (storePhoneInput) {
+  storePhoneInput.addEventListener("input", () => {
+    storePhoneInput.value = formatPhoneInput(storePhoneInput.value);
+  });
+}
+
 async function deleteMenuItem(id) {
   const confirmDelete = confirm(
     "Tem certeza que deseja excluir este item do cardápio? Essa ação não pode ser desfeita."
@@ -910,6 +1147,25 @@ async function deleteMenuItem(id) {
   }
 }
 
+if (panelMenuSearchInput) {
+  panelMenuSearchInput.addEventListener("input", () => {
+    panelMenuSearchTerm = panelMenuSearchInput.value;
+    renderPanelMenu();
+  });
+}
+
+if (saveScheduleBtn) {
+  saveScheduleBtn.addEventListener("click", saveStoreSchedule);
+}
+
+if (toggleScheduleBtn) {
+  toggleScheduleBtn.addEventListener("click", toggleScheduleAutomation);
+}
+
+if (saveContactBtn) {
+  saveContactBtn.addEventListener("click", saveStoreContact);
+}
+
 refreshOrdersBtn.addEventListener("click", loadOrders);
 refreshMenuBtn.addEventListener("click", loadMenu);
 
@@ -925,6 +1181,7 @@ loadOrders();
 loadMenu();
 loadStoreStatus();
 loadReviews();
+loadStoreContact();
 
 setInterval(loadOrders, 10000);
 setInterval(loadOrders, 60000);

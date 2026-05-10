@@ -1,5 +1,10 @@
 const API_BASE = "http://localhost:3001";
 
+const contactPhone = document.getElementById("contactPhone");
+const contactAddress = document.getElementById("contactAddress");
+const contactHours = document.getElementById("contactHours");
+const contactEmail = document.getElementById("contactEmail");
+
 const storeClosedOverlay = document.getElementById("storeClosedOverlay");
 let isStoreOpen = true;
 
@@ -20,6 +25,10 @@ const siteNav = document.querySelector("[data-site-nav]");
 const cartCount = document.querySelector("[data-cart-count]");
 const cartCountMobile = document.querySelector("[data-cart-count-mobile]");
 const menuGrid = document.querySelector("[data-menu-grid]");
+
+const menuSearchInput = document.getElementById("menuSearchInput");
+let menuSearchTerm = "";
+
 const categoryFilters = document.querySelector("[data-category-filters]");
 const root = document.documentElement;
 
@@ -107,6 +116,26 @@ if (config.hero?.title && heroTitle) {
 
 if (config.hero?.description && heroDescription) {
   heroDescription.textContent = config.hero.description;
+}
+
+async function loadStoreContact() {
+  try {
+    const response = await fetch(`${API_BASE}/api/store/contact`);
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result?.message || "Erro ao carregar contato.");
+    }
+
+    const contact = result.contact || {};
+
+    if (contactPhone) contactPhone.textContent = contact.phone || "-";
+    if (contactAddress) contactAddress.textContent = contact.address || "-";
+    if (contactHours) contactHours.textContent = contact.displayHours || "-";
+    if (contactEmail) contactEmail.textContent = contact.email || "-";
+  } catch (error) {
+    console.error("Erro ao carregar contato:", error);
+  }
 }
 
 function createPlaceholderImage() {
@@ -613,10 +642,20 @@ function renderCategoryFilters() {
 function renderMenu() {
   if (!menuGrid || !Array.isArray(menuItems)) return;
 
-  const filteredItems =
-    activeCategory === "Todos"
-      ? menuItems
-      : menuItems.filter((item) => item.category === activeCategory);
+  const search = menuSearchTerm.toLowerCase().trim();
+
+const filteredItems = menuItems.filter((item) => {
+  const matchesCategory =
+    activeCategory === "Todos" || item.category === activeCategory;
+
+  const matchesSearch =
+    !search ||
+    item.name?.toLowerCase().includes(search) ||
+    item.category?.toLowerCase().includes(search) ||
+    item.description?.toLowerCase().includes(search);
+
+  return matchesCategory && matchesSearch;
+});
 
   if (!filteredItems.length) {
     menuGrid.innerHTML = `
@@ -888,7 +927,7 @@ async function loadPublicReviews() {
           <article class="public-review-card">
             <div class="public-review-top">
               <strong>
-  ${review.customerName ? `Pedido de ${review.customerName}` : `Pedido ${review.orderId}`}
+  ${review.customerName ? `${review.customerName}` : `Pedido ${review.orderId}`}
 </strong>
               <span>${formatReviewDate(review.createdAt)}</span>
             </div>
@@ -932,18 +971,31 @@ async function loadStoreStatus() {
 }
 
 function renderPromoDay() {
-  if (!promoDayList) return;
+  const promoSection = document.getElementById("promocoes");
+  const search = menuSearchTerm.toLowerCase().trim();
 
-  const promoItems = menuItems.filter(
-    (item) => item.isPromotion && item.promotionalPrice
-  );
+  if (!promoDayList || !promoSection) return;
+
+  const promoItems = menuItems.filter((item) => {
+  const matchesPromotion =
+    item.isPromotion && item.promotionalPrice;
+
+  const matchesSearch =
+    !search ||
+    item.name?.toLowerCase().includes(search) ||
+    item.category?.toLowerCase().includes(search) ||
+    item.description?.toLowerCase().includes(search);
+
+  return matchesPromotion && matchesSearch;
+});
 
   if (!promoItems.length) {
-    promoDayList.innerHTML = `
-      <p class="promo-empty">Nenhuma promoção disponível no momento.</p>
-    `;
+    promoSection.classList.add("is-hidden");
+    promoDayList.innerHTML = "";
     return;
   }
+
+  promoSection.classList.remove("is-hidden");
 
   promoDayList.innerHTML = promoItems
     .slice(0, 6)
@@ -964,24 +1016,24 @@ function renderPromoDay() {
             </div>
 
             <button class="promo-btn" type="button" data-promo-add-to-cart="${item.id}">
-  Adicionar
-</button>
+              Adicionar
+            </button>
           </div>
         </article>
       `
     )
     .join("");
 
-    promoDayList.querySelectorAll("[data-promo-add-to-cart]").forEach((button) => {
-  button.addEventListener("click", () => {
-    const itemId = Number(button.getAttribute("data-promo-add-to-cart"));
-    const selectedItem = menuItems.find((item) => item.id === itemId);
+  promoDayList.querySelectorAll("[data-promo-add-to-cart]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const itemId = Number(button.getAttribute("data-promo-add-to-cart"));
+      const selectedItem = menuItems.find((item) => item.id === itemId);
 
-    if (selectedItem) {
-      addToCart(selectedItem);
-    }
+      if (selectedItem) {
+        addToCart(selectedItem);
+      }
+    });
   });
-});
 }
 
 function formatPhoneInput(value) {
@@ -1008,9 +1060,17 @@ if (customerPhoneInput) {
   });
 }
 
+menuSearchInput.addEventListener("input", () => {
+  menuSearchTerm = menuSearchInput.value;
+
+  renderMenu();
+  renderPromoDay();
+});
+
 renderCart();
 updateCartCount();
 loadMenuFromApi();
 loadMenuFromApi();
 loadPublicReviews();
 loadStoreStatus();
+loadStoreContact();

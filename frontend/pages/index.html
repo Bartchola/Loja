@@ -70,18 +70,6 @@
       </div>
     </section>
 
-    <section class="promo-day-section" id="promocoes">
-  <div class="section-header-public">
-    <span class="eyebrow">🔥 Promoções</span>
-    <h2>Promoções do dia</h2>
-    <p>Aproveite as melhores ofertas de hoje</p>
-  </div>
-
-  <div id="promoDayList" class="promo-day-list">
-    <p class="promo-empty">Carregando promoções...</p>
-  </div>
-</section>
-
     <section class="menu-section" id="cardapio">
       <div class="container">
         <div class="section-heading">
@@ -93,7 +81,28 @@
           </p>
         </div>
 
-        <div class=" tabs category-filters" data-category-filters></div>
+        <div class="menu-search-wrapper">
+  <input
+    type="search"
+    id="menuSearchInput"
+    class="menu-search-input"
+    placeholder="Buscar por produto, categoria ou descrição..."
+  />
+</div>
+
+<div class=" tabs category-filters" data-category-filters></div>
+
+<section class="promo-day-section" id="promocoes">
+  <div class="section-header-public">
+    <span class="eyebrow">🔥 Promoções</span>
+    <h2>Promoções do dia</h2>
+    <p>Aproveite as melhores ofertas de hoje</p>
+  </div>
+
+  <div id="promoDayList" class="promo-day-list">
+    <p class="promo-empty">Carregando promoções...</p>
+  </div>
+</section>
 
         <div class="menu-grid" data-menu-grid></div>
       </div>
@@ -112,15 +121,73 @@
 </section>
 
     <section class="placeholder-section" id="sobre">
-      <div class="container">
-        <h2>Sobre Nós</h2>
-      </div>
+      <div class="about-content">
+  <div class="section-badge">🍗 SOBRE NÓS</div>
+
+  <h2>Mais sabor, praticidade e agilidade para seus pedidos.</h2>
+
+  <p>
+    Somos uma loja especializada em delivery e pedidos online, focada em
+    oferecer uma experiência rápida, moderna e intuitiva para nossos clientes.
+  </p>
+
+  <p>
+    Trabalhamos com ingredientes selecionados, atendimento ágil e um sistema
+    pensado para facilitar desde o pedido até a entrega.
+  </p>
+
+  <div class="about-highlights">
+    <div class="about-card">
+      <strong>🔥 Qualidade</strong>
+      <span>Produtos preparados com cuidado e sabor.</span>
+    </div>
+
+    <div class="about-card">
+      <strong>⚡ Agilidade</strong>
+      <span>Pedidos rápidos e acompanhamento em tempo real.</span>
+    </div>
+
+    <div class="about-card">
+      <strong>📱 Facilidade</strong>
+      <span>Peça pelo celular de forma simples e intuitiva.</span>
+    </div>
+  </div>
+</div>
     </section>
 
     <section class="placeholder-section" id="contato">
-      <div class="container">
-        <h2>Contato</h2>
-      </div>
+      <div class="contact-content">
+  <div class="section-badge">📞 CONTATO</div>
+
+  <h2>Entre em contato conosco</h2>
+
+  <p>
+    Ficou com alguma dúvida, sugestão ou deseja falar com nossa equipe?
+    Estamos prontos para ajudar.
+  </p>
+
+  <div class="contact-grid">
+  <div class="contact-card">
+    <strong>📱 WhatsApp</strong>
+    <span id="contactPhone">(51) 99999-9999</span>
+  </div>
+
+  <div class="contact-card">
+    <strong>📍 Endereço</strong>
+    <span id="contactAddress">Rua Exemplo, 123 - Centro</span>
+  </div>
+
+  <div class="contact-card">
+    <strong>🕒 Horário</strong>
+    <span id="contactHours">Todos os dias das 18h às 23h</span>
+  </div>
+
+  <div class="contact-card">
+    <strong>📧 E-mail</strong>
+    <span id="contactEmail">contato@seudominio.com</span>
+  </div>
+</div>
+</div>
     </section>
   </main>
 

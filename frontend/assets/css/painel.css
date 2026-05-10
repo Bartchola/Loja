@@ -876,3 +876,220 @@ body:has(#reviewForm) .menu-form {
     display: none;
   }
 }
+
+.review-page .review-container {
+  max-width: 720px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.review-page .review-form {
+  position: static;
+}
+
+.review-page .review-actions {
+  position: static !important;
+  display: flex !important;
+  width: 100% !important;
+  margin-top: 18px !important;
+}
+
+.review-page .review-actions button {
+  position: static !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  transform: none !important;
+}
+
+.menu-form.hidden {
+  display: none !important;
+}
+
+.menu-form:not(.hidden) {
+  display: block !important;
+}
+
+/* =========================
+   MODAL CARDÁPIO
+========================= */
+
+.menu-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 27, 22, 0.58);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.menu-modal-overlay.hidden {
+  display: none !important;
+}
+
+.menu-modal {
+  width: min(900px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: linear-gradient(180deg, #fff 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  box-shadow: 0 24px 70px rgba(31, 27, 22, 0.24);
+  padding: 24px;
+}
+
+.menu-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.menu-modal-header h2 {
+  font-size: 1.8rem;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.menu-modal-header p {
+  color: var(--muted);
+}
+
+.menu-modal-close {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 999px;
+  background: #fff !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+  font-size: 1.8rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-modal-close:hover {
+  background: #f7f2ec !important;
+  transform: none !important;
+}
+
+.menu-modal .menu-form {
+  margin-bottom: 0;
+  box-shadow: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .menu-modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .menu-modal {
+    max-height: calc(100vh - 24px);
+    border-radius: 24px 24px 0 0;
+    padding: 20px;
+  }
+
+  .menu-modal-header h2 {
+    font-size: 1.45rem;
+  }
+}
+
+.panel-search-wrapper {
+  margin-bottom: 20px;
+}
+
+.panel-search-input {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 20px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.panel-search-input::placeholder {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.panel-search-input:focus {
+  border-color: rgba(217, 79, 4, 0.55);
+  box-shadow: 0 0 0 4px rgba(217, 79, 4, 0.12), var(--shadow);
+}
+
+.store-schedule-card {
+  background: linear-gradient(180deg, #fff 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  margin-bottom: 24px;
+}
+
+.store-schedule-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 6px;
+}
+
+.store-schedule-card p {
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.schedule-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.schedule-grid input {
+  min-height: 46px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0 14px;
+  background: #fff;
+  color: var(--text);
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .schedule-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .schedule-grid {
+    grid-template-columns: 1fr;
+  }
+}

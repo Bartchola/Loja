@@ -1792,3 +1792,118 @@ body {
     font-weight: 700;
   }
 }
+
+/* =========================
+   SEARCH INDEX
+========================= */
+
+.menu-search-wrapper {
+  width: min(1200px, calc(100% - 32px));
+  margin: 28px auto 10px;
+  position: relative;
+}
+
+.menu-search-input {
+  width: 100%;
+  min-height: 64px;
+  padding: 0 24px;
+  border: 2px solid rgba(217, 79, 4, 0.18);
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,248,242,0.98) 100%);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+
+  box-shadow:
+    0 12px 30px rgba(217, 79, 4, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+
+  outline: none;
+  transition: 0.25s ease;
+}
+
+.menu-search-input::placeholder {
+  color: #9b8576;
+  font-weight: 600;
+}
+
+.menu-search-input:focus {
+  border-color: rgba(217, 79, 4, 0.65);
+
+  box-shadow:
+    0 0 0 6px rgba(217, 79, 4, 0.10),
+    0 18px 40px rgba(217, 79, 4, 0.14);
+}
+
+/* =========================
+   ABOUT / CONTACT
+========================= */
+
+.about-content,
+.contact-content {
+  width: min(1200px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.about-content h2,
+.contact-content h2 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1;
+  margin: 18px 0;
+}
+
+.about-content p,
+.contact-content p {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  max-width: 720px;
+}
+
+.about-highlights,
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.contact-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.about-card,
+.contact-card {
+  background: linear-gradient(180deg, #fff 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+
+.about-card strong,
+.contact-card strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.about-card span,
+.contact-card span {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .about-highlights,
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-content h2,
+  .contact-content h2 {
+    line-height: 1.1;
+  }
+}
